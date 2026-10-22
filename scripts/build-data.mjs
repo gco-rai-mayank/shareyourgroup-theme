@@ -36,7 +36,7 @@ function decode(s) {
 
 // WhatsApp photo links carry an expiry (oe=<hex unix time>). Drop ones that are already dead.
 function image(url) {
-  if (!/^https:\/\/pps\.whatsapp\.net\//.test(url || '')) return '';
+  if (!/^https:\/\/(?:pps|mmg)\.whatsapp\.net\//.test(url || '')) return '';
   const oe = /[?&]oe=([0-9A-Fa-f]+)/.exec(url);
   if (oe && parseInt(oe[1], 16) * 1000 < Date.now()) return '';
   return url;

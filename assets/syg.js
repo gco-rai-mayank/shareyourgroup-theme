@@ -130,7 +130,7 @@
     } else {                 // raw Apps Script format (fallback + live updates)
       var link = String(r.group_link || '').split('?')[0], m = CODE_RE.exec(link), name = decode(r.group_name);
       if (!m || !name || BAD_NAME.test(name)) return null;
-      var img = /^https:\/\/pps\.whatsapp\.net\//.test(r.group_image || '') ? r.group_image : '';
+      var img = /^https:\/\/(?:pps|mmg)\.whatsapp\.net\//.test(r.group_image || '') ? r.group_image : '';
       g = { id: m[2], name: name, link: link, img: img, t: Date.parse(r.timestamp) || 0, cat: r.category || '', desc: decode(r.description), ch: m[1] === 'channel', p: r.topic || '' };
     }
     if (!CAT[g.cat]) g.cat = classify(g.name + ' ' + g.desc);
