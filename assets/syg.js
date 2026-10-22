@@ -848,7 +848,9 @@
   function maybeAutoTour() {
     if (!app || tour) return;
     var asked = location.hash === '#tour';
-    if (!asked && (store('syg-tour-done') || new URLSearchParams(location.search).get('g'))) return;
+    // no surprise tour for visitors who came for something specific: a shared card (?g= / ?q=) or a FAQ answer (#faq-…)
+    var qp = new URLSearchParams(location.search);
+    if (!asked && (store('syg-tour-done') || qp.get('g') || qp.get('q') || /^#faq-/.test(location.hash))) return;
     var tries = 0, wait = setInterval(function () {
       if (qs('#syg-app .grid .g-card:not(.sk)') && !(dlg && dlg.open)) { clearInterval(wait); setTimeout(startTour, asked ? 200 : 1200); }
       else if (++tries > 40) clearInterval(wait);
