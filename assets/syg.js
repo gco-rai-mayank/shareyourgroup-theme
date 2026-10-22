@@ -100,17 +100,41 @@
   }
   renderCatsMenu();
 
-  /* FAQ: topic filter + Google FAQ rich results built from the questions on the page */
+  /* FAQ: topic tabs, a search box, a link for every question (#faq-…), and the FAQPage structured data */
   (function faq() {
     var box = qs('[data-faq-schema]');
     if (!box) return;
+    var tab = 'all', input = qs('[data-faq-search]'), empty = qs('.faq-empty', box);
+    function slug(s) { return 'faq-' + s.toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 70); }
+    qsa('details', box).forEach(function (dt) { if (!dt.id) dt.id = slug(qs('summary', dt).textContent); });
+    function show() {
+      var words = (input && input.value || '').toLowerCase().split(/\s+/).filter(Boolean), shown = 0;
+      qsa('details', box).forEach(function (dt) {
+        var text = dt.textContent.toLowerCase();
+        var ok = (tab === 'all' || dt.getAttribute('data-faq') === tab) && words.every(function (w) { return text.indexOf(w) > -1; });
+        dt.hidden = !ok; if (ok) shown++;
+        if (ok && words.length) dt.open = true;
+      });
+      qsa('.faq-group', box).forEach(function (h) {   // hide a heading when none of its questions are showing
+        var n = h.nextElementSibling, any = false;
+        while (n && n.tagName === 'DETAILS') { if (!n.hidden) any = true; n = n.nextElementSibling; }
+        h.hidden = !any;
+      });
+      if (empty) empty.hidden = shown > 0;
+    }
     qsa('[data-faq-tab]').forEach(function (b) {
       b.addEventListener('click', function () {
-        var t = b.getAttribute('data-faq-tab');
+        tab = b.getAttribute('data-faq-tab');
         qsa('[data-faq-tab]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-        qsa('[data-faq]', box).forEach(function (el) { el.hidden = t !== 'all' && el.getAttribute('data-faq') !== t; });
+        show();
       });
     });
+    if (input) input.addEventListener('input', show);
+    function openHash() {   // /#faq-how-do-i-join-… opens and shows that one question
+      var dt = location.hash.length > 5 && qs('details' + location.hash.replace(/[^#\w-]/g, ''), box);
+      if (dt) { dt.open = true; setTimeout(function () { dt.scrollIntoView({ block: 'center' }); }, 300); }
+    }
+    openHash(); window.addEventListener('hashchange', openHash);
     var items = qsa('details', box).map(function (dt) {
       var q = qs('summary', dt), a = qs('div', dt);
       return { '@type': 'Question', name: q.textContent.trim(), acceptedAnswer: { '@type': 'Answer', text: a.innerHTML.replace(/\s+/g, ' ').trim() } };
