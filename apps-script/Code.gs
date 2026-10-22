@@ -82,8 +82,8 @@ function doGet(e) {
 function liveRows(filter) {
   const out = [];
   readRows().forEach(r => {
-    // rows without a status are from before migrateV2(); show them if they have a real name
-    if (r.status ? r.status !== 'live' : GENERIC_NAME.test(clean(r.name))) return;
+    // only live rows with a real name (old rows can be "live" with an empty name; the GitHub reader fills those in)
+    if ((r.status && r.status !== 'live') || GENERIC_NAME.test(clean(r.name))) return;
     if (filter && !filter(r)) return;
     out.push({
       group_link: r.link,
@@ -113,6 +113,34 @@ function doPost(e) {
      POST {action:'enrich', token, items} → saves what GitHub found
    The token stops strangers from writing to the sheet. Create it once with setupGitHubHelper(). */
 
+/* GitHub's own 15-minute schedule often doesn't run for this repo, so Apps Script starts the job:
+   every 15 minutes (trigger made by setup) and about a minute after someone submits a group.
+   Needs a GitHub access key saved under Project Settings → Script properties → GITHUB_TOKEN
+   (fine-grained token, only this repo, permission "Actions: Read and write"). */
+const GH_REPO = 'gco-rai-mayank/shareyourgroup-theme';
+const GH_WORKFLOW = 'sync-groups.yml';
+
+function kickGitHub() {
+  const token = PropertiesService.getScriptProperties().getProperty('GITHUB_TOKEN');
+  if (!token) { Logger.log('No GITHUB_TOKEN in Script properties yet.'); return false; }
+  const res = UrlFetchApp.fetch('https://api.github.com/repos/' + GH_REPO + '/actions/workflows/' + GH_WORKFLOW + '/dispatches', {
+    method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+    headers: { Authorization: 'Bearer ' + token.trim(), Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
+    payload: JSON.stringify({ ref: 'main' })
+  });
+  const ok = res.getResponseCode() === 204;
+  Logger.log(ok ? 'GitHub job started.' : 'GitHub said ' + res.getResponseCode() + ': ' + res.getContentText().slice(0, 300));
+  return ok;
+}
+
+/** After a submission: start the job, at most once every 3 minutes. */
+function kickSoon() {
+  const cache = CacheService.getScriptCache();
+  if (cache.get('kicked')) return;
+  cache.put('kicked', '1', 180);
+  try { kickGitHub(); } catch (e) {}
+}
+
 function setupGitHubHelper() {
   const props = PropertiesService.getScriptProperties();
   let t = props.getProperty('ENRICH_TOKEN');
@@ -129,9 +157,13 @@ function okToken(t) {
 function todoRows() {
   const rows = readRows();
   const byChecked = (a, b) => (new Date(a.checked || 0)) - (new Date(b.checked || 0));
-  const pending = rows.filter(r => r.status === 'pending' && r.code).sort(byChecked).slice(0, 60);
-  const live = rows.filter(r => r.status === 'live' && r.code).sort(byChecked).slice(0, 80 - pending.length);
-  return pending.concat(live).map(r => ({ link: r.link, status: r.status }));
+  const noName = r => GENERIC_NAME.test(clean(r.name));
+  // 1) newest submissions first, so new groups show up fast  2) other rows without a name  3) oldest-checked live rows
+  const byNewest = (a, b) => (new Date(b.time || 0)) - (new Date(a.time || 0));
+  const fresh = rows.filter(r => r.code && (r.status === 'pending' || (r.status === 'live' && noName(r)))).sort(byNewest);
+  const first = fresh.slice(0, 10), rest = fresh.slice(10).sort(byChecked).slice(0, 30);
+  const live = rows.filter(r => r.code && r.status === 'live' && !noName(r)).sort(byChecked).slice(0, 50 - first.length - rest.length);
+  return first.concat(rest, live).map(r => ({ link: r.link, status: noName(r) ? 'pending' : r.status }));
 }
 
 function enrich(items) {
@@ -211,7 +243,8 @@ function submit(data) {
     if (status === 'live') CacheService.getScriptCache().put('gen', String(Date.now()), 21600);
 
     if (status === 'rejected') return { ok: true, status, message: 'This group can’t be listed because it breaks our rules.' };
-    if (status === 'pending') return { ok: true, status, message: 'Got it! We’re fetching your group’s name and photo from WhatsApp. It will appear on the site within about 15 minutes.' };
+    if (status === 'pending') kickSoon();   // GitHub reads the name and photo in about a minute
+    if (status === 'pending') return { ok: true, status, message: 'Got it! We’re fetching your group’s name and photo from WhatsApp. It will appear on the site in a few minutes.' };
     return { ok: true, status, name: meta.name, image: meta.image, message: 'You’re live! Share your listing to get members faster.' };
   } finally {
     lock.releaseLock();
@@ -341,8 +374,11 @@ function migrateV2() {
 /** Run once after migrateV2(). Removes ALL old triggers (including the IMPORTXML batch ones) and adds the new ones. */
 function setup() {
   ScriptApp.getProjectTriggers().forEach(t => ScriptApp.deleteTrigger(t));
-  ScriptApp.newTrigger('repairPending').timeBased().everyHours(1).create();
-  ScriptApp.newTrigger('recheckLive').timeBased().everyHours(6).create();
+  // WhatsApp blocks Google's servers (429), so these two rarely succeed now; GitHub does the reading.
+  // Kept as a backup, less often, so they don't waste time.
+  ScriptApp.newTrigger('repairPending').timeBased().everyHours(6).create();
+  ScriptApp.newTrigger('recheckLive').timeBased().everyDays(1).atHour(3).create();
+  ScriptApp.newTrigger('kickGitHub').timeBased().everyMinutes(15).create();
   if (CONFIG.BUMP_RANDOM_DAILY) ScriptApp.newTrigger('bumpRandom').timeBased().everyDays(1).atHour(6).create();
   Logger.log('Triggers installed: %s', ScriptApp.getProjectTriggers().map(t => t.getHandlerFunction()).join(', '));
 }
