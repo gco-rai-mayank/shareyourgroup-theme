@@ -78,6 +78,9 @@ p{margin:0 0 1em}
 .btn:active{transform:scale(.97)}
 .btn-primary{background:var(--green);color:var(--green-ink);box-shadow:0 8px 24px -10px rgba(37,211,102,.7)}
 .btn-primary:hover{box-shadow:0 10px 30px -8px rgba(37,211,102,.85)}
+/* every green button, both themes: white text on a deeper green (bright #25d366 is too light for white text) */
+.btn-primary,.entry .btn-primary,.entry .t-box .btn-primary,.contact-form-widget .contact-form-button,.contact-form-widget input[type=button],.new-pill,.g-ad a.cta-btn,.tabbar .tab-add span,.lm-ic,.auto-toggle[aria-pressed='true']{background:linear-gradient(180deg,#1cb455,#15963f);color:#fff;border-color:transparent}
+.btn-primary:hover,.contact-form-widget .contact-form-button:hover,.contact-form-widget input[type=button]:hover,.new-pill:hover,.g-ad a.cta-btn:hover{background:linear-gradient(180deg,#19a64e,#128536)}
 .btn-ghost{background:var(--surface);border-color:var(--line-2)}
 .btn-ghost:hover{background:var(--surface-2)}
 .btn-sm{height:36px;padding:0 12px;font-size:.88rem;border-radius:10px}
@@ -503,7 +506,7 @@ dialog.sheet[open]{animation:pop .22s ease}
 .t-box .search{display:block;margin-bottom:14px}
 .t-box .grid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
 .entry .t-box a{color:inherit;text-decoration:none}
-.entry .t-box .btn-primary{color:var(--green-ink)}
+.entry .t-box .btn-primary{color:#fff}
 .entry .t-box h3{margin:0 0 4px;font-size:1.02rem}
 
 /* "new groups" button while browsing */
@@ -518,6 +521,19 @@ dialog.sheet[open]{animation:pop .22s ease}
 .entry{font-size:1.04rem;line-height:1.75}
 .entry h2{font-size:1.6rem;margin:1.6em 0 .6em}
 .entry h3{font-size:1.25rem;margin:1.4em 0 .5em}
+/* Older posts carry their own <style> with bare h4/p/blockquote/table rules (grey headings, justified text,
+   light boxes). These .entry rules outrank them so every post follows the theme in both modes. */
+.post-body.entry{padding:0;margin:0;font-family:var(--font-body)!important}
+.entry h1,.entry h2,.entry h3,.entry h4,.entry h5,.entry h6{color:var(--text);font-family:var(--font-display);letter-spacing:-.02em;line-height:1.3;border:0;padding:0}
+.entry h4{font-size:1.08rem;margin:1.3em 0 .4em}
+.entry p,.entry li{text-align:left}
+.entry p{margin:0 0 1.1em}
+.entry hr{height:1px;border:0;background:var(--line);margin:2em 0}
+.entry blockquote{margin:1.4em 0;padding:14px 18px;border:0;border-left:4px solid var(--green);border-radius:0 14px 14px 0;background:var(--surface);color:var(--text)}
+.entry table{border-collapse:collapse;box-shadow:none}
+.entry th,.entry td{border:1px solid var(--line);color:var(--text)}
+.entry th{background:var(--surface-2)}
+.entry .translate-box{border-color:var(--line-2)}
 .entry a{color:var(--cyan);text-decoration:underline;text-underline-offset:3px}
 .entry img{border-radius:14px}
 .entry blockquote{margin:1.4em 0;padding:4px 18px;border-left:3px solid var(--green);color:var(--muted)}
@@ -548,7 +564,7 @@ dialog.sheet[open]{animation:pop .22s ease}
 /* page content blocks (blogger/pages/*.html, pasted into Blogger pages) */
 .entry .pg{font-size:1rem}
 .entry .btn{text-decoration:none;color:var(--text)}
-.entry .btn-primary{color:var(--green-ink)}
+.entry .btn-primary{color:#fff}
 .pg-lead{font-size:1.12rem;color:var(--muted);margin:0 0 22px}
 .pg-meta{font:500 .78rem/1 var(--font-mono);color:var(--faint);margin:0 0 10px}
 .pg-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:14px 0 22px}
@@ -577,7 +593,27 @@ dialog.sheet[open]{animation:pop .22s ease}
 .pg-toc{display:block;margin:0 0 26px;padding:12px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-size:.9rem;line-height:2}
 .pg-legal h2{font-size:1.35rem!important;scroll-margin-top:calc(var(--header-h) + 20px)}
 .pg-legal h3{font-size:1.05rem!important}
-.entry [data-syg="submit"] .tile,.entry [data-syg="contact-form"] .contact-form-widget{margin:8px 0 26px}
+.entry [data-syg="submit"] .tile,.entry [data-syg="contact-form"] .contact-form-widget{margin:8px auto 26px}
+
+/* "Find us elsewhere" social cards (built by syg.js from .pg-links) */
+.pg-links.soc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:14px 0 22px}
+.soc-card{--brand:#888;position:relative;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--text);text-decoration:none!important;overflow:hidden;transition:transform .18s,border-color .18s,box-shadow .18s}
+.soc-card::before{content:'';position:absolute;inset:0;background:var(--brand);opacity:0;transition:opacity .18s}
+.soc-card:hover{transform:translateY(-3px);border-color:transparent;box-shadow:0 14px 30px -14px var(--glow,rgba(0,0,0,.5))}
+.soc-card:hover::before{opacity:.1}
+.soc-card>*{position:relative}
+.soc-card-ic{display:grid;place-items:center;flex:none;width:46px;height:46px;border-radius:14px;background:var(--brand);color:#fff}
+.soc-card-ic svg{width:24px;height:24px}
+.soc-card-txt{display:grid;line-height:1.25;min-width:0}
+.soc-card-txt b{font-family:var(--font-display);font-size:1.02rem;color:var(--text)}
+.soc-card-txt small{color:var(--muted);font:500 .78rem var(--font-mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.soc-card-go{width:18px;height:18px;margin-left:auto;color:var(--faint);transition:transform .18s,color .18s}
+.soc-card:hover .soc-card-go{transform:translate(2px,-2px);color:var(--text)}
+.soc-card-instagram{--brand:linear-gradient(45deg,#f9a825,#ee2a7b 50%,#6228d7);--glow:rgba(238,42,123,.55)}
+.soc-card-facebook{--brand:#1877f2;--glow:rgba(24,119,242,.55)}
+.soc-card-reddit{--brand:#ff4500;--glow:rgba(255,69,0,.5)}
+.soc-card-whatsapp{--brand:#25d366;--glow:rgba(37,211,102,.5)}
+.soc-card-telegram{--brand:#229ed9;--glow:rgba(34,158,217,.5)}
 
 /* contact form gadget, moved into the contact page */
 .contact-form-widget{max-width:520px}
