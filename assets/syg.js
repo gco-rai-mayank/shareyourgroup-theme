@@ -883,8 +883,8 @@
       gateFocus(box);
     }
     /* Contact page: show Blogger's contact form gadget */
-    var cf = qs('.contact-src .contact-form-widget');
-    if (cf && /contact/.test(path)) entry.appendChild(cf);
+    var cf = qs('.contact-src .contact-form-widget'), cfSpot = qs('[data-syg="contact-form"]', entry);
+    if (cf && (cfSpot || /contact/.test(path))) (cfSpot || entry).appendChild(cf);
     /* Direct WhatsApp message tool */
     var wf = qs('.whatsapp_form', entry) || qs('[data-syg="wa-direct"]', entry);
     if (wf) waTool(wf);
