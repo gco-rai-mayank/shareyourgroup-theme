@@ -64,18 +64,24 @@ async function main() {
   if (!Array.isArray(todo)) { console.log('Apps Script said:', todo); return; }
   console.log(`${todo.length} links to read (${todo.filter(t => t.status === 'pending').length} new).`);
 
+  // One link at a time with a pause: WhatsApp answers "429 slow down" if we go faster.
+  // On a 429 we wait 45 s and try once more; a second 429 ends this run (the rest is read next run).
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
   const results = [];
-  let limited = false;
-  for (let i = 0; i < todo.length && !limited; i += 3) {          // 3 at a time, gently
-    const batch = todo.slice(i, i + 3);
-    const got = await Promise.all(batch.map(t => read(t.link).catch(() => ({ name: '', image: '', dead: false }))));
-    got.forEach((g, k) => {
-      if (g.limited) { limited = true; return; }
-      if (g.name || g.dead) results.push({ link: batch[k].link, ...g });
-    });
-    await new Promise(r => setTimeout(r, 700));
+  let limited = false, waited = false;
+  for (let i = 0; i < todo.length && !limited; i++) {
+    let g = await read(todo[i].link).catch(() => ({ name: '', image: '', dead: false }));
+    if (g.limited && !waited) {
+      waited = true;
+      console.log(`WhatsApp asked us to slow down after ${i} links; waiting 45 s…`);
+      await sleep(45_000);
+      g = await read(todo[i].link).catch(() => ({ name: '', image: '', dead: false }));
+    }
+    if (g.limited) { limited = true; break; }
+    if (g.name || g.dead) results.push({ link: todo[i].link, ...g });
+    await sleep(1500);
   }
-  if (limited) console.log('WhatsApp asked us to slow down; the rest will be read next run.');
+  if (limited) console.log('WhatsApp is still limiting us; the rest will be read next run.');
 
   const named = results.filter(r => r.name).length, dead = results.filter(r => r.dead).length;
   console.log(`Read ${named} names, ${dead} links that look dead.`);

@@ -1,12 +1,14 @@
 name: Sync groups + publish
 
-# Every 15 minutes: copy the group list from the Apps Script into data/groups.json,
-# then publish the repo to GitHub Pages. Also publishes whenever you edit a file on main.
+# Every 15 minutes: read new groups' names from WhatsApp, copy the group list from the Apps Script
+# into data/groups.json, then publish to GitHub Pages. Also publishes whenever you edit a file on main.
+# The Apps Script starts this job every 15 minutes (kickGitHub); GitHub's own schedule is only a backup,
+# because GitHub often skips scheduled runs on small repos.
 
 on:
   schedule:
-    - cron: '*/15 * * * *'   # GitHub may run it a few minutes late; that's normal
-  workflow_dispatch:          # "Run workflow" button on the Actions tab
+    - cron: '*/15 * * * *'
+  workflow_dispatch:          # "Run workflow" button, and the Apps Script's kickGitHub()
   push:
     branches: [main]
 
@@ -24,12 +26,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
-      publish: ${{ steps.commit.outputs.changed == 'true' || github.event_name != 'schedule' }}
+      publish: ${{ steps.commit.outputs.changed == 'true' || github.event_name == 'push' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
       - name: Read new groups' names and photos from WhatsApp
         # WhatsApp blocks Google's servers, so GitHub reads the details and sends them to the Apps Script
         continue-on-error: true
@@ -56,7 +58,7 @@ jobs:
           git commit -m "data: sync groups"
           git push
           echo "changed=true" >> "$GITHUB_OUTPUT"
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: .
 
