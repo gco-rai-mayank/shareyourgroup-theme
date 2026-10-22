@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<!--
+  ============================================================
+   ShareYourGroup — Blogger theme v1.0
+   This file is only the page skeleton + text.
+   Design  : assets/syg.css   (GitHub)
+   Features: assets/syg.js    (GitHub)
+   Groups  : data/groups.json (GitHub, refreshed every 15 min)
+   Search this file for "EDIT" to find the parts you can change.
+  ============================================================
+--><html b:css='false' b:defaultwidgetversion='2' b:layoutsVersion='3' b:responsive='true' b:templateVersion='1.0.0' expr:dir='data:blog.languageDirection' expr:lang='data:blog.localeUnderscoreDelimited' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+  <meta charset='utf-8'/>
+  <meta content='width=device-width, initial-scale=1, viewport-fit=cover' name='viewport'/>
+  <meta content='#06080c' name='theme-color'/>
+  <meta content='YOUR-YANDEX-CODE' name='yandex-verification'/>
+  <b:include data='blog' name='all-head-content'/>
+  <!-- Logo + favicons (assets/brand on GitHub) -->
+  <link href='https://YOUR-GITHUB-USER.github.io/YOUR-REPO/assets/brand/favicon.ico' rel='icon' sizes='any'/>
+  <link href='https://YOUR-GITHUB-USER.github.io/YOUR-REPO/assets/brand/logo-mark-small.svg' rel='icon' type='image/svg+xml'/>
+  <link href='https://YOUR-GITHUB-USER.github.io/YOUR-REPO/assets/brand/apple-touch-icon.png' rel='apple-touch-icon'/>
+  <title><b:if cond='data:view.isHomepage'><data:blog.title.escaped/> &#8212; Find &amp; Share WhatsApp Groups and Channels<b:else/><data:view.title.escaped/> | <data:blog.title.escaped/></b:if></title>
+  <meta content='website' property='og:type'/>
+  <meta content='summary_large_image' name='twitter:card'/>
+
+  <!-- Dark by default; remembers the visitor's choice (no flash) -->
+  <script>
+  //<![CDATA[
+  (function(){var t=null;try{t=JSON.parse(localStorage.getItem('syg-theme'))}catch(e){}document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark')})();
+  //]]>
+  </script>
+
+  <link href='https://fonts.googleapis.com' rel='preconnect'/>
+  <link crossorigin='anonymous' href='https://fonts.gstatic.com' rel='preconnect'/>
+  <link href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap' rel='stylesheet'/>
+
+  <!-- EDIT: if you rename the GitHub user or repo, change it here, in the script tag at the bottom, and in window.SYG -->
+  <link href='https://YOUR-GITHUB-USER.github.io/YOUR-REPO/assets/syg.css' rel='stylesheet'/>
+
+  <!-- Google Analytics -->
+  <script async='async' src='https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX'/>
+  <script>
+  //<![CDATA[
+  window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');
+  //]]>
+  </script>
+
+  <!-- Google AdSense (auto ads) -->
+  <script async='async' crossorigin='anonymous' src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0000000000000000'/>
+
+  <b:if cond='data:view.isHomepage'>
+  <script type='application/ld+json'>
+  {
+    &quot;@context&quot;: &quot;https://schema.org&quot;,
+    &quot;@type&quot;: &quot;WebSite&quot;,
+    &quot;name&quot;: &quot;ShareYourGroup&quot;,
+    &quot;url&quot;: &quot;https://www.your-domain.com/&quot;,
+    &quot;potentialAction&quot;: {
+      &quot;@type&quot;: &quot;SearchAction&quot;,
+      &quot;target&quot;: &quot;https://www.your-domain.com/?q={search_term_string}#explore&quot;,
+      &quot;query-input&quot;: &quot;required name=search_term_string&quot;
+    }
+  }
+  </script>
+  </b:if>
+
+<b:skin><![CDATA[
+/* The real styles load from GitHub (assets/syg.css). This only stops a white flash. */
+html{background:#06080c}
+html[data-theme='light']{background:#f4f6fa}
+]]></b:skin>
+<b:template-skin><![CDATA[
+body#layout .section{margin:0 0 12px}
+]]></b:template-skin>
+</head>
+
+<body expr:class='data:view.isHomepage ? &quot;is-home&quot; : (data:view.isPost ? &quot;is-post&quot; : (data:view.isPage ? &quot;is-page&quot; : (data:view.isError ? &quot;is-error&quot; : &quot;is-list&quot;)))'>
+<a class='skip-link' href='#content'>Skip to content</a>
+
+<!-- ======================= HEADER ======================= -->
+<!-- HEADER:START -->
+<header class='site-header'>
+  <div class='container nav-wrap'>
+    <a aria-label='ShareYourGroup home' class='brand' href='/'>
+      <img alt='ShareYourGroup' class='logo-img logo-dark' height='54' src='https://YOUR-GITHUB-USER.github.io/YOUR-REPO/assets/brand/logo-dark.svg' width='246'/><img alt='ShareYourGroup' class='logo-img logo-light' height='54' src='https://YOUR-GITHUB-USER.github.io/YOUR-REPO/assets/brand/logo-light.svg' width='246'/>
+    </a>
+
+    <!-- EDIT: menu. Categories in "Groups" are filled in by syg.js -->
+    <nav aria-label='Main' class='nav' id='nav'>
+      <ul class='nav-list'>
+        <li class='has-mega'>
+          <details class='nav-drop'>
+            <summary class='nav-link'><span aria-hidden='true' class='nl-ic'>&#128101;</span>Groups <svg aria-hidden='true' class='i chev' viewBox='0 0 24 24'><path d='m6 9 6 6 6-6'></path></svg></summary>
+            <div class='drop-panel mega mega-groups'>
+              <div class='mega-head'>
+                <div><b>Browse groups</b><span>Pick a category or jump straight in.</span></div>
+                <a class='btn btn-ghost btn-sm' href='/#explore'>All groups &#8594;</a>
+              </div>
+              <div class='mega-quick'>
+                <a href='/?sort=new#explore'><span aria-hidden='true'>&#127381;</span> Newest</a>
+                <a href='/?type=channels#explore'><span aria-hidden='true'>&#128226;</span> Channels</a>
+                <a href='/?sort=mix#explore'><span aria-hidden='true'>&#127922;</span> Surprise me</a>
+                <a href='/search'><span aria-hidden='true'>&#128205;</span> City &amp; topic lists</a>
+              </div>
+              <div class='mega-cats' data-cats-menu='1'></div>
+            </div>
+          </details>
+        </li>
+        <li><a class='nav-link' href='/p/submit-your-group-links.html'><span aria-hidden='true' class='nl-ic'>&#10133;</span>Submit</a></li>
+        <li><a class='nav-link' href='/search'><span aria-hidden='true' class='nl-ic'>&#128214;</span>Blog</a></li>
+        <li class='has-mega'>
+          <details class='nav-drop'>
+            <summary class='nav-link'><span aria-hidden='true' class='nl-ic'>&#128295;</span>Tools <svg aria-hidden='true' class='i chev' viewBox='0 0 24 24'><path d='m6 9 6 6 6-6'></path></svg></summary>
+            <div class='drop-panel mega mega-tools'>
+              <div class='mega-col'>
+                <h5>WhatsApp</h5>
+                <a class='tool' href='/p/send-direct-whatsapp-message-without.html'><span class='ti'>&#128172;</span><span><b>Direct message</b><small>Chat without saving a number</small></span></a>
+                <a class='tool' href='/p/how-to-share-your-whatsapp-group.html'><span class='ti'>&#128228;</span><span><b>Share your group</b><small>Get your invite link</small></span></a>
+                <a class='tool' href='/p/how-to-use-shared-whatsapp-groups.html'><span class='ti'>&#128229;</span><span><b>Join groups</b><small>How joining works</small></span></a>
+              </div>
+              <div class='mega-col mega-col-wide'>
+                <h5>Convert</h5>
+                <div class='tool-grid'>
+                  <a class='tool' href='https://www.groupchaton.com/p/advance-image-convertor.html' rel='noopener' target='_blank'><span class='ti'>&#128444;</span><span><b>Image converter</b><small>JPG, PNG, WebP</small></span></a>
+                  <a class='tool' href='https://www.groupchaton.com/p/image-to-pdf-converter.html' rel='noopener' target='_blank'><span class='ti'>&#128196;</span><span><b>Image &#8594; PDF</b><small>Photos into one PDF</small></span></a>
+                  <a class='tool' href='https://www.groupchaton.com/p/pdf-to-image-converter-tool.html' rel='noopener' target='_blank'><span class='ti'>&#127748;</span><span><b>PDF &#8594; Image</b><small>Pages as pictures</small></span></a>
+                  <a class='tool' href='https://www.groupchaton.com/p/pdf-to-text-converter.html' rel='noopener' target='_blank'><span class='ti'>&#128221;</span><span><b>PDF &#8594; Text</b><small>Copy text out</small></span></a>
+                  <a class='tool' href='https://www.groupchaton.com/p/image-to-text-ocr-converter.html' rel='noopener' target='_blank'><span class='ti'>&#128269;</span><span><b>Image &#8594; Text</b><small>Read text in photos</small></span></a>
+                  <a class='tool' href='https://www.groupchaton.com/p/audio-to-text-converter-speech.html' rel='noopener' target='_blank'><span class='ti'>&#127897;</span><span><b>Audio &#8594; Text</b><small>Voice notes to text</small></span></a>
+                  <a class='tool' href='https://www.groupchaton.com/p/text-to-speech-tts-converter.html' rel='noopener' target='_blank'><span class='ti'>&#128266;</span><span><b>Text &#8594; Speech</b><small>Listen to any text</small></span></a>
+                  <a class='tool' href='https://www.groupchaton.com/p/text-to-pdf-converter.html' rel='noopener' target='_blank'><span class='ti'>&#128195;</span><span><b>Text &#8594; PDF</b><small>Notes into a PDF</small></span></a>
+                  <a class='tool' href='https://www.groupchaton.com/p/html-to-pdf-converter.html' rel='noopener' target='_blank'><span class='ti'>&#127760;</span><span><b>HTML &#8594; PDF</b><small>Web pages as PDF</small></span></a>
+                </div>
+              </div>
+              <div class='mega-col'>
+                <h5>PDF &amp; links</h5>
+                <a class='tool' href='https://www.groupchaton.com/p/pdf-merge-tool.html' rel='noopener' target='_blank'><span class='ti'>&#129513;</span><span><b>Merge PDFs</b><small>Join files into one</small></span></a>
+                <a class='tool' href='https://www.groupchaton.com/p/pdf-splitter-extract-pages.html' rel='noopener' target='_blank'><span class='ti'>&#9986;</span><span><b>Split PDF</b><small>Pull out pages</small></span></a>
+                <a class='tool' href='https://www.groupchaton.com/p/file-compression.html' rel='noopener' target='_blank'><span class='ti'>&#128476;</span><span><b>Compress files</b><small>Make files smaller</small></span></a>
+                <a class='tool' href='https://www.groupchaton.com/p/url-to-qr-code-generator.html' rel='noopener' target='_blank'><span class='ti'>&#128307;</span><span><b>QR code</b><small>For your group link</small></span></a>
+                <a class='tool' href='https://www.groupchaton.com/p/url-shortener.html' rel='noopener' target='_blank'><span class='ti'>&#128279;</span><span><b>URL shortener</b><small>Short, shareable links</small></span></a>
+              </div>
+            </div>
+          </details>
+        </li>
+        <li><a class='nav-link' href='/p/contact-us.html'><span aria-hidden='true' class='nl-ic'>&#9993;</span>Contact</a></li>
+      </ul>
+      <!-- phone menu only -->
+      <div class='nav-foot'>
+        <button class='btn btn-primary' data-open-submit='1' type='button'>+ Submit your group</button>
+        <button class='btn btn-ghost' data-tour='1' type='button'>Take a quick tour</button>
+        <div class='socials'>
+          <a aria-label='Instagram' class='icon-btn' href='https://www.instagram.com/YOUR-PAGE' rel='noopener' target='_blank'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><rect height='18' rx='5' width='18' x='3' y='3'></rect><circle cx='12' cy='12' r='4'></circle></svg></a>
+          <a aria-label='Facebook' class='icon-btn' href='https://www.facebook.com/YOUR-PAGE' rel='noopener' target='_blank'><svg aria-hidden='true' class='i f' viewBox='0 0 24 24'><path d='M14 9h3V5.5h-3c-2.2 0-4 1.8-4 4V12H7.5v3.5H10V22h3.5v-6.5H16l.7-3.5h-3.2V9.5c0-.3.2-.5.5-.5z'></path></svg></a>
+          <a aria-label='Reddit' class='icon-btn' href='https://www.reddit.com/user/YOUR-NAME/' rel='noopener' target='_blank'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><circle cx='12' cy='14' r='7'></circle><circle cx='18.5' cy='5.5' r='1.5'></circle><path d='M12 7l1.5-4 5 2.5M9.5 16.5c1.5 1 3.5 1 5 0'></path></svg></a>
+        </div>
+      </div>
+    </nav>
+
+    <div class='nav-actions'>
+      <button aria-label='Take a quick tour of the site' class='icon-btn tour-btn' data-tour='1' title='Quick tour' type='button'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><circle cx='12' cy='12' r='9'></circle><path d='M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.6'></path><path d='M12 17h.01'></path></svg></button>
+      <button aria-label='Search groups (press /)' class='icon-btn' data-focus-search='1' title='Search groups (/)' type='button'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><circle cx='11' cy='11' r='7'></circle><path d='m20 20-3.5-3.5'></path></svg></button>
+      <button aria-label='Toggle light or dark mode' class='icon-btn theme-toggle' id='themeToggle' type='button'>
+        <svg aria-hidden='true' class='i i-moon' viewBox='0 0 24 24'><path d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z'></path></svg>
+        <svg aria-hidden='true' class='i i-sun' viewBox='0 0 24 24'><circle cx='12' cy='12' r='4'></circle><path d='M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4'></path></svg>
+      </button>
+      <button class='btn btn-primary btn-sm header-cta' data-open-submit='1' type='button'>+ Submit group</button>
+      <button aria-controls='nav' aria-expanded='false' aria-label='Menu' class='icon-btn menu-toggle' id='menuToggle' type='button'>
+        <svg aria-hidden='true' class='i i-menu' viewBox='0 0 24 24'><path d='M4 7h16M4 12h16M4 17h16'></path></svg>
+        <svg aria-hidden='true' class='i i-x' viewBox='0 0 24 24'><path d='M6 6l12 12M18 6 6 18'></path></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<!-- HEADER:END -->
+
+<main id='content'>
+
+<!-- ======================= HOMEPAGE ======================= -->
+<b:if cond='data:view.isHomepage'>
+
+  <section class='hero'>
+    <div class='container hero-inner'>
+      <div>
+        <span class='pill'><span aria-hidden='true' class='live-dot'/> <span data-stat='total'>1,000+</span> groups live &#183; <span data-stat='updated'>live</span></span>
+        <!-- EDIT: headline + intro -->
+        <h1>Find your people.<br/><span class='grad'>Drop your group.</span></h1>
+        <p class='hero-lead'>The open directory of WhatsApp groups &amp; channels. Paste your invite link and go live in seconds &#8212; or explore communities for jobs, exams, gaming, memes and more.</p>
+        <form class='drop-form' data-drop='1'>
+          <svg aria-hidden='true' class='i' viewBox='0 0 24 24'><path d='M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7'/><path d='M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7'/></svg>
+          <label class='sr-only' for='dropLink'>Your WhatsApp group or channel link</label>
+          <input autocomplete='off' id='dropLink' inputmode='url' placeholder='https://chat.whatsapp.com/…' type='url'/>
+          <button class='btn btn-primary' type='submit'>Drop it &#8629;</button>
+        </form>
+        <div class='hero-trust'><span>No signup</span><span>100% free</span><span>Groups + Channels</span></div>
+        <div class='hero-stats'>
+          <div><b data-stat='total'>&#8212;</b><span>groups</span></div>
+          <div><b data-stat='channels'>&#8212;</b><span>channels</span></div>
+          <div><b data-stat='today'>&#8212;</b><span>new today</span></div>
+        </div>
+      </div>
+      <div aria-label='Just added' class='hero-stack'/>
+    </div>
+  </section>
+
+  <div class='container'>
+    <!-- EDIT: announcement strip (visitors can close it) -->
+    <div class='notice' data-dismissable='1' id='notice-v1'>
+      <span aria-hidden='true' class='ic'><svg class='i' viewBox='0 0 24 24'><circle cx='12' cy='12' r='9'></circle><path d='M12 11v5M12 8h.01'></path></svg></span>
+      <p><b>Group missing?</b> We fixed the bug that hid some submissions. If yours still isn&#8217;t here, <a data-open-submit='1' href='/p/submit-your-group-links.html'>resubmit it</a> &#8212; takes 10 seconds.</p>
+      <button aria-label='Dismiss' class='icon-btn' data-dismiss='1' type='button'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><path d='M6 6l12 12M18 6 6 18'/></svg></button>
+    </div>
+  </div>
+
+  <section aria-labelledby='explore-title' class='explore' id='explore'>
+    <div class='container'>
+      <div class='section-head'>
+        <div><span class='eyebrow'>explore</span><h2 id='explore-title'>WhatsApp group &amp; channel links</h2></div>
+      </div>
+      <div id='syg-app'><noscript>Turn on JavaScript to browse groups.</noscript></div>
+    </div>
+  </section>
+
+  <!-- the script moves the latest blog posts here -->
+  <div id='home-blog-slot'/>
+
+  <section aria-labelledby='how-title' class='block'>
+    <div class='container'>
+      <div class='section-head'><div><span class='eyebrow'>how it works</span><h2 id='how-title'>Three taps. That&#8217;s it.</h2></div></div>
+      <div class='steps'>
+        <div class='step'><h3>Copy your invite link</h3><p>In WhatsApp open your group &#8594; tap its name &#8594; <b>Invite via link</b> &#8594; Copy. Channels: <b>Share</b> &#8594; Copy link.</p></div>
+        <div class='step'><h3>Drop it here</h3><p>Paste the link, pick a category, add a one-line description. We grab the name and photo for you.</p></div>
+        <div class='step'><h3>Get members</h3><p>Your group shows up in search and categories. Share your listing link to grow even faster.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby='rules-title' class='block' id='rules'>
+    <div class='container'>
+      <div class='section-head'><div><span class='eyebrow'>community rules</span><h2 id='rules-title'>Keep it clean, keep it real.</h2></div></div>
+      <!-- EDIT: sharing rules -->
+      <div class='bento'>
+        <div class='tile tile-ok'>
+          <div class='ic ic-ok'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><circle cx='12' cy='12' r='9'></circle><path d='m8 12.5 2.7 2.7L16.5 9.5'></path></svg></div><h3>Share this</h3>
+          <ul><li>Active groups with a working invite link</li><li>A clear name that says what the group is about</li><li>Respectful, positive communities</li></ul>
+        </div>
+        <div class='tile tile-no'>
+          <div class='ic ic-no'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><circle cx='12' cy='12' r='9'></circle><path d='m5.6 5.6 12.8 12.8'></path></svg></div><h3>Never this</h3>
+          <ul><li>Adult, illegal or scam groups</li><li>Fake, dead or copy-paste groups</li><li>Hate speech, violence or misinformation</li></ul>
+        </div>
+        <div class='tile'>
+          <div class='ic ic-flag'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><path d='M4 22V4M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1'></path></svg></div><h3>Spot something bad?</h3>
+          <p>Tap the flag on any card. Listings with several reports are hidden automatically while we review them.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ:START -->
+  <section aria-labelledby='faq-title' class='block faq-block' id='faq'>
+    <div class='container faq-wrap'>
+      <div class='faq-side'>
+        <span class='eyebrow'>faq</span>
+        <h2 id='faq-title'>Questions, answered.</h2>
+        <p>Joining, sharing, staying safe and how the site works. Tap a topic to filter.</p>
+        <div aria-label='FAQ topics' class='faq-tabs' role='group'>
+          <button aria-pressed='true' data-faq-tab='all' type='button'>All</button>
+          <button aria-pressed='false' data-faq-tab='join' type='button'>&#128229; Joining</button>
+          <button aria-pressed='false' data-faq-tab='share' type='button'>&#128228; Sharing</button>
+          <button aria-pressed='false' data-faq-tab='safe' type='button'>&#128737; Safety</button>
+          <button aria-pressed='false' data-faq-tab='about' type='button'>&#10024; About</button>
+        </div>
+        <div class='faq-help'>
+          <b>Still stuck?</b>
+          <p>Send us the group link and tell us what went wrong.</p>
+          <a class='btn btn-ghost btn-sm' href='/p/contact-us.html'>Contact us &#8594;</a>
+        </div>
+      </div>
+
+      <!-- EDIT: questions. Copy a <details> block to add one; data-faq is the topic (join, share, safe, about).
+           Google reads these as FAQ rich results automatically. -->
+      <div class='faq' data-faq-schema='1'>
+        <h3 class='faq-group' data-faq='join'>Joining groups</h3>
+        <details data-faq='join'><summary>How do I join a WhatsApp group from ShareYourGroup?</summary><div>
+          <p>Find a group with the search box or the category chips, tap <b>Join group</b>, read the short safety tips and tap <b>Continue to WhatsApp</b>. WhatsApp opens the invite page; tap <b>Join group</b> (or <b>Follow</b> for a channel). On a computer it opens WhatsApp Web or the desktop app instead.</p>
+        </div></details>
+        <details data-faq='join'><summary>Why does WhatsApp say &#8220;This invite link was reset&#8221; or &#8220;Couldn&#8217;t join&#8221;?</summary><div>
+          <p>Usually one of three things: the admin made a new invite link, the group is full (WhatsApp groups hold up to 1,024 members), or the admin now approves every new member. We re-check listings regularly and remove dead links. Tap the &#128681; on the card to tell us sooner, then try another group.</p>
+        </div></details>
+        <details data-faq='join'><summary>What&#8217;s the difference between a group and a channel?</summary><div>
+          <p>In a <b>group</b> everyone can chat, and every member can see the others&#8217; phone numbers. A <b>channel</b> is one-way: only admins post, followers read and react, and your number stays hidden from other followers. Use the <b>Groups / Channels</b> switch above the list to see one kind only.</p>
+        </div></details>
+        <details data-faq='join'><summary>Will other members see my phone number?</summary><div>
+          <p>In a group, yes: members can see your number and, depending on your settings, your photo and About. In a channel, no. Before joining large public groups, go to <b>Settings &#8594; Privacy</b> and set Profile photo, About and Last seen to <b>My contacts</b>.</p>
+        </div></details>
+        <details data-faq='join'><summary>How do I leave or report a bad group?</summary><div>
+          <p>In WhatsApp open the group, tap its name and choose <b>Exit group</b> or <b>Report group</b>. Then tap the &#128681; on its card here and pick a reason. Listings with several reports are hidden automatically while we look at them.</p>
+        </div></details>
+
+        <h3 class='faq-group' data-faq='share'>Sharing your group</h3>
+        <details data-faq='share'><summary>How do I get my group&#8217;s invite link?</summary><div>
+          <ol><li>Open the group in WhatsApp and tap the group name at the top.</li><li>Tap <b>Invite via link</b> (usually only admins see this).</li><li>Tap <b>Copy link</b>. It looks like <code>https://chat.whatsapp.com/…</code></li></ol>
+          <p>For a channel: open it, tap the channel name, then <b>Share</b> and copy the link (<code>https://whatsapp.com/channel/…</code>).</p>
+        </div></details>
+        <details data-faq='share'><summary>How do I list my group or channel, and is it free?</summary><div>
+          <p>Paste the link in the box at the top of the page, agree to the sharing rules, pick a category and add a one-line description, then tap <b>Publish</b>. We fetch the name and photo from WhatsApp for you. It&#8217;s completely free and you don&#8217;t need an account.</p>
+        </div></details>
+        <details data-faq='share'><summary>How long until my group shows up?</summary><div>
+          <p>Straight away. You&#8217;ll see your card at the top of the list as soon as you publish, and other visitors see it the next time they open or refresh the page. If WhatsApp doesn&#8217;t share the group details at first, we retry every hour and it appears once they come through.</p>
+        </div></details>
+        <details data-faq='share'><summary>Why was my group rejected or removed?</summary><div>
+          <ul><li>It broke the sharing rules: adult content, scams or &#8220;earn money&#8221; schemes, selling numbers or OTPs, hate, violence or drugs.</li><li>The invite link stopped working (reset, group deleted or full).</li><li>Several visitors reported it.</li></ul>
+          <p>If you reset your invite link in WhatsApp, the old listing stops working. Just submit the new link.</p>
+        </div></details>
+        <details data-faq='share'><summary>Can I edit or remove my listing?</summary><div>
+          <p>The name and photo refresh from WhatsApp automatically, so change them in WhatsApp. To remove a listing, reset the invite link in WhatsApp (group name &#8594; Invite via link &#8594; <b>Reset link</b>). The old link stops working and the listing is removed at the next check. You can also contact us with the link.</p>
+        </div></details>
+        <details data-faq='share'><summary>How do I move my group back to the top?</summary><div>
+          <p>Submit the same link again. If it&#8217;s already listed, it moves back to the top, once every 24 hours.</p>
+        </div></details>
+        <details data-faq='share'><summary>How can I get more members?</summary><div>
+          <ul><li>Use a clear name and a real group photo; they&#8217;re the first things people see here.</li><li>Write a description that says who the group is for and how often you post.</li><li>Pin your rules inside the group and keep it active; quiet groups lose members.</li><li>Share your listing with the share button on your card: Instagram bio, Telegram, your WhatsApp status.</li><li>Don&#8217;t spam other groups. It gets you reported and can get your WhatsApp number banned.</li></ul>
+        </div></details>
+
+        <h3 class='faq-group' data-faq='safe'>Staying safe</h3>
+        <details data-faq='safe'><summary>Is it safe to join groups listed here?</summary><div>
+          <p>Anyone can submit a group, so be as careful as you would with strangers anywhere online. We block adult, scam and hate listings, re-check links and hide reported groups, but we don&#8217;t run or moderate the groups themselves.</p>
+        </div></details>
+        <details data-faq='safe'><summary>How do I spot a scam group?</summary><div>
+          <ul><li>Promises like &#8220;earn &#8377;5,000 daily&#8221;, &#8220;double your money&#8221; or &#8220;guaranteed profit&#8221;.</li><li>&#8220;Task&#8221; jobs: like videos, rate hotels or review maps for money.</li><li>Paying to join a &#8220;VIP&#8221; group, or a &#8220;registration fee&#8221; for a job.</li><li>Requests for OTPs, UPI PINs or screen sharing.</li><li>APK files or links asking you to install an app.</li></ul>
+          <p>Real groups never ask you to pay to join. Leave, report it in WhatsApp and tap the &#128681; here.</p>
+        </div></details>
+        <details data-faq='safe'><summary>What should I never share in a group?</summary><div>
+          <p>OTPs, passwords, your UPI PIN, bank or card details, photos of your Aadhaar or PAN, and your live location. No real bank, company or admin will ask for these on WhatsApp. If you&#8217;ve lost money to a scam in India, call the cyber-crime helpline <b>1930</b> or report it at <b>cybercrime.gov.in</b>.</p>
+        </div></details>
+
+        <h3 class='faq-group' data-faq='about'>About ShareYourGroup</h3>
+        <details data-faq='about'><summary>Is ShareYourGroup part of WhatsApp or Meta?</summary><div>
+          <p>No. ShareYourGroup is an independent directory run by its own small team. WhatsApp is a trademark of Meta Platforms, Inc.</p>
+        </div></details>
+        <details data-faq='about'><summary>How is the site free?</summary><div>
+          <p>Ads and a few partner links pay for it. They&#8217;re always marked <b>sponsored</b>, and listing or joining groups will always be free.</p>
+        </div></details>
+        <details data-faq='about'><summary>How do I contact you or ask for a removal?</summary><div>
+          <p>Use the <a href='/p/contact-us.html'>contact page</a>. For removals or reports, include the group link so we can find it quickly.</p>
+        </div></details>
+      </div>
+    </div>
+  </section>
+<!-- FAQ:END -->
+  <!-- AdSense multiplex unit -->
+  <div class='container ad-wide'>
+    <ins class='adsbygoogle' data-ad-client='ca-pub-0000000000000000' data-ad-format='autorelaxed' data-ad-slot='4837738215' style='display:block'/>
+    <script>
+    //<![CDATA[
+    (adsbygoogle=window.adsbygoogle||[]).push({});
+    //]]>
+    </script>
+  </div>
+
+</b:if>
+
+<!-- ======================= BLOG / PAGES (all other views) ======================= -->
+<div class='container blog-area'>
+  <b:section class='blog-section' id='blog-main' name='Blog Posts' showaddelement='yes'>
+    <b:widget id='Blog1' locked='true' title='Blog Posts' type='Blog' version='2' visible='true'>
+      <!-- Self-contained on purpose: no b:include of Blogger's helper blocks. If a helper is missing,
+           Blogger silently drops the whole gadget (that is what blanked every page in v1.0).
+           Lists (home, search, labels): title + short snippet + image. Posts and pages: title + body. -->
+      <b:includable id='main' var='this'>
+        <b:if cond='data:view.isMultipleItems'>
+          <div class='blog-posts post-list'>
+            <b:loop values='data:posts' var='post'>
+              <article class='post-outer'>
+                <b:attr cond='data:post.featuredImage' expr:value='resizeImage(data:post.featuredImage, 640, &quot;16:9&quot;)' name='data-img'/>
+                <h3 class='post-title'><a expr:href='data:post.url'><data:post.title/></a></h3>
+                <div class='post-snippet'><data:post.snippets.short/></div>
+              </article>
+            </b:loop>
+          </div>
+          <b:if cond='!data:view.isHomepage'>
+            <div class='blog-pager' id='blog-pager'>
+              <b:if cond='data:newerPageUrl'><a class='blog-pager-newer-link' expr:href='data:newerPageUrl'>&#8592; Newer posts</a></b:if>
+              <b:if cond='data:olderPageUrl'><a class='blog-pager-older-link' expr:href='data:olderPageUrl'>Older posts &#8594;</a></b:if>
+            </div>
+          </b:if>
+        <b:else/>
+          <div class='blog-posts'>
+            <b:loop values='data:posts' var='post'>
+              <article class='post-outer-container'>
+                <div class='post-outer'>
+                  <div class='post'>
+                    <h3 class='post-title entry-title'><data:post.title/></h3>
+                    <div class='post-header'></div>
+                    <div class='post-body entry-content' expr:id='&quot;post-body-&quot; + data:post.id'>
+                      <data:post.body/>
+                    </div>
+                    <b:if cond='data:post.labels'>
+                      <div class='post-labels'>
+                        <b:loop values='data:post.labels' var='label'><a expr:href='data:label.url' rel='tag'><data:label.name/></a></b:loop>
+                      </div>
+                    </b:if>
+                  </div>
+                </div>
+              </article>
+            </b:loop>
+          </div>
+        </b:if>
+      </b:includable>
+    </b:widget>
+  </b:section>
+</div>
+
+</main>
+
+<!-- CTA:START -->
+<section aria-label='Submit your group' class='container cta-wrap'>
+  <div class='cta-band'>
+    <div>
+      <h2>Got a group? <span class='grad'>Drop it in 10 seconds.</span></h2>
+      <p>Free, no signup. It goes live straight away and gets shared by people looking for exactly your kind of group.</p>
+    </div>
+    <button class='btn btn-primary' data-open-submit='1' type='button'>+ Submit your group</button>
+  </div>
+</section>
+<!-- CTA:END -->
+
+<!-- FOOTER:START -->
+<footer class='site-footer'>
+  <div class='container'>
+    <div class='footer-grid'>
+      <div class='footer-about'>
+        <a aria-label='ShareYourGroup home' class='brand' href='/'>
+          <img alt='ShareYourGroup' class='logo-img logo-dark' height='54' src='https://YOUR-GITHUB-USER.github.io/YOUR-REPO/assets/brand/logo-dark.svg' width='246'/><img alt='ShareYourGroup' class='logo-img logo-light' height='54' src='https://YOUR-GITHUB-USER.github.io/YOUR-REPO/assets/brand/logo-light.svg' width='246'/>
+        </a>
+        <p>Find and share WhatsApp groups &amp; channels. Built for communities, by a community.</p>
+        <!-- EDIT: social links -->
+        <p class='follow-label'>Follow us</p>
+        <div class='socials'>
+          <a aria-label='Instagram' class='icon-btn soc soc-ig' href='https://www.instagram.com/YOUR-PAGE' rel='noopener' target='_blank' title='Instagram'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><rect height='18' rx='5' width='18' x='3' y='3'></rect><circle cx='12' cy='12' r='4'></circle><circle cx='17.5' cy='6.5' fill='currentColor' r='1' stroke='none'></circle></svg></a>
+          <a aria-label='Facebook' class='icon-btn soc soc-fb' href='https://www.facebook.com/YOUR-PAGE' rel='noopener' target='_blank' title='Facebook'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><path d='M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z'></path></svg></a>
+          <a aria-label='Reddit' class='icon-btn soc soc-rd' href='https://www.reddit.com/user/YOUR-NAME/' rel='noopener' target='_blank' title='Reddit'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><ellipse cx='12' cy='14.5' rx='8' ry='6'></ellipse><circle cx='4.6' cy='11.6' r='1.8'></circle><circle cx='19.4' cy='11.6' r='1.8'></circle><path d='M12 8.5l1.3-5 4.2 1.2'></path><circle cx='19' cy='5' r='1.5'></circle><circle cx='9' cy='13.5' fill='currentColor' r='1' stroke='none'></circle><circle cx='15' cy='13.5' fill='currentColor' r='1' stroke='none'></circle><path d='M9 17c1.8 1.2 4.2 1.2 6 0'></path></svg></a>
+          <a aria-label='Support us on Ko-fi' class='icon-btn soc soc-kf' href='https://ko-fi.com/YOUR-NAME' rel='noopener' target='_blank' title='Support us on Ko-fi'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><path d='M17 8h1a4 4 0 0 1 0 8h-1'></path><path d='M3 8h14v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5z'></path><path d='M10 11.2c-.6-.8-2.2-.6-2.2.7 0 1.1 1.5 2 2.2 2.6.7-.6 2.2-1.5 2.2-2.6 0-1.3-1.6-1.5-2.2-.7z' fill='currentColor' stroke='none'></path><path d='M7 2v3M11 2v3M15 2v3'></path></svg></a>
+        </div>
+      </div>
+      <!-- EDIT: footer links -->
+      <nav aria-label='Explore'>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href='/#explore'>All groups</a></li>
+          <li><a href='/?cat=jobs#explore'>Job groups</a></li>
+          <li><a href='/?cat=education#explore'>Study groups</a></li>
+          <li><a href='/?cat=gaming#explore'>Gaming groups</a></li>
+          <li><a href='/?type=channels#explore'>Channels</a></li>
+        </ul>
+      </nav>
+      <nav aria-label='Help'>
+        <h4>Help</h4>
+        <ul>
+          <li><a href='/p/submit-your-group-links.html'>Submit a group</a></li>
+          <li><a href='/p/how-to-use-shared-whatsapp-groups.html'>How to join groups</a></li>
+          <li><a href='/p/how-to-share-your-whatsapp-group.html'>How to share your group</a></li>
+          <li><a href='/#faq'>FAQ</a></li>
+          <li><a data-tour='1' href='/#tour'>Take a quick tour</a></li>
+          <li><a href='/search'>Blog</a></li>
+        </ul>
+      </nav>
+      <nav aria-label='Free tools'>
+        <h4>Free tools</h4>
+        <ul>
+          <li><a href='/p/send-direct-whatsapp-message-without.html'>WhatsApp without saving number</a></li>
+          <li><a href='https://www.groupchaton.com/p/url-to-qr-code-generator.html' rel='noopener' target='_blank'>QR code for your group</a></li>
+          <li><a href='https://www.groupchaton.com/p/image-to-pdf-converter.html' rel='noopener' target='_blank'>Image &amp; PDF tools</a></li>
+          <li><a href='https://www.groupchaton.com/' rel='noopener' target='_blank'>All tools on GroupChatOn &#8599;</a></li>
+        </ul>
+      </nav>
+      <nav aria-label='Legal'>
+        <h4>Legal</h4>
+        <ul>
+          <li><a href='/p/contact-us.html'>Contact us</a></li>
+          <li><a href='/p/privacy-policy.html'>Privacy policy</a></li>
+          <li><a href='/p/disclaimer.html'>Disclaimer</a></li>
+          <li><a href='/p/comment-policy.html'>Comment policy</a></li>
+          <li><a href='/#rules'>Sharing rules</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class='footer-bottom'>
+      <p>&#169; <span data-year='1'>2026</span> <a href='/'>ShareYourGroup</a>. All rights reserved. Not affiliated with WhatsApp or Meta.</p>
+      <!-- EDIT: credit -->
+      <p class='credit'>Designed &amp; Developed by <a href='https://www.niveshsahayak.in/' rel='noopener' target='_blank'>Nivesh Sahayak</a></p>
+    </div>
+  </div>
+</footer>
+<!-- FOOTER:END -->
+
+<!-- Gadgets the script borrows. Edit them in Blogger: Layout. -->
+<b:section class='promo-src' id='promo-src' name='Promo card between groups' showaddelement='yes'>
+  <b:widget id='HTML10' locked='false' title='Promo card between groups' type='HTML' version='2' visible='true'>
+    <b:widget-settings>
+      <b:widget-setting name='content'><![CDATA[<div><b>Your ad or promo here</b><br/>Edit this in Blogger: Layout, "Promo card between groups".<br/><a class="cta-btn" href="#">Call to action</a></div>]]></b:widget-setting>
+    </b:widget-settings>
+    <b:includable id='main'>
+      <div class='widget-content'><data:content/></div>
+    </b:includable>
+  </b:widget>
+</b:section>
+<b:section class='contact-src' id='contact-src' name='Contact form (shown on the Contact page)' showaddelement='yes'>
+  <b:widget id='ContactForm1' locked='false' title='Contact form' type='ContactForm' version='2' visible='true'>
+    <b:includable id='main'>
+      <div class='contact-form-widget'>
+        <form name='contact-form'>
+          <label class='field'><span>Your name</span><input class='contact-form-name' expr:id='data:widget.instanceId + &quot;_contact-form-name&quot;' name='name' type='text' value=''/></label>
+          <label class='field'><span>Email <small>required</small></span><input class='contact-form-email' expr:id='data:widget.instanceId + &quot;_contact-form-email&quot;' name='email' type='text' value=''/></label>
+          <label class='field'><span>Message <small>required</small></span><textarea class='contact-form-email-message' expr:id='data:widget.instanceId + &quot;_contact-form-email-message&quot;' name='email-message' rows='5'></textarea></label>
+          <input class='contact-form-button contact-form-button-submit' expr:id='data:widget.instanceId + &quot;_contact-form-submit&quot;' type='button' value='Send message'/>
+          <p class='contact-form-error-message' expr:id='data:widget.instanceId + &quot;_contact-form-error-message&quot;'></p>
+          <p class='contact-form-success-message' expr:id='data:widget.instanceId + &quot;_contact-form-success-message&quot;'></p>
+        </form>
+      </div>
+    </b:includable>
+  </b:widget>
+</b:section>
+
+<!-- ======================= MOBILE TAB BAR ======================= -->
+<nav aria-label='Quick' class='tabbar'>
+  <a expr:href='data:blog.homepageUrl'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><path d='M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z'/></svg>Home</a>
+  <a data-focus-search='1' href='/#explore'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><circle cx='11' cy='11' r='7'/><path d='m20 20-3.5-3.5'/></svg>Search</a>
+  <button aria-label='Submit a group' class='tab-add' data-open-submit='1' type='button'><span><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><path d='M12 5v14M5 12h14'/></svg></span></button>
+  <a href='/search'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><path d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z'/><path d='M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5'/></svg>Blog</a>
+  <button data-open-tools='1' type='button'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><path d='M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z'/></svg>Tools</button>
+</nav>
+<button aria-label='Auto-scroll' aria-pressed='true' class='icon-btn auto-toggle' hidden='hidden' id='autoToggle' type='button'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><rect height='14' rx='4.5' width='9' x='7.5' y='2'></rect><path d='M12 5.5v3'></path><path class='auto-chev' d='m8.5 19 3.5 3 3.5-3'></path></svg><span class='auto-label'>Auto</span><span class='auto-state'>ON</span></button>
+<button aria-label='Back to top' class='icon-btn to-top' id='toTop' type='button'><svg aria-hidden='true' class='i' viewBox='0 0 24 24'><path d='M12 19V5M5 12l7-7 7 7'/></svg></button>
+<div aria-live='polite' class='toast' id='toast' role='status'/>
+
+<!-- ======================= SETTINGS + SCRIPT ======================= -->
+<script>
+//<![CDATA[
+window.SYG = {
+  /* EDIT: where the fast group list lives (GitHub Pages) */
+  dataUrl: 'https://YOUR-GITHUB-USER.github.io/YOUR-REPO/data/groups.json',
+  /* EDIT: your Google Apps Script web app URL (submissions go here) */
+  apiUrl: 'https://script.google.com/macros/s/YOUR-APPS-SCRIPT-ID/exec',
+  perPage: 24,        /* groups loaded per scroll */
+  adEvery: 6,         /* EDIT: promo/ad card after every 6 groups (0 = off) */
+  adClient: 'ca-pub-0000000000000000',   /* EDIT: your AdSense publisher id */
+  adSlot: '',         /* EDIT: AdSense ad unit id for the card slots (empty = promo card only) */
+  disqus: '',
+  siteName: 'ShareYourGroup'
+};
+//]]>
+</script>
+<script defer='defer' src='https://YOUR-GITHUB-USER.github.io/YOUR-REPO/assets/syg.js'/>
+</body>
+</html>

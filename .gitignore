@@ -1,0 +1,8 @@
+# Personal, site-specific files: kept on this computer only.
+# The public theme is blogger/theme.template.xml (rebuild it with scripts/make-theme-template.ps1).
+blogger/theme.xml
+blogger/pages/
+apps-script/Topics.gs
+SETUP-GUIDE.html
+PAGES-GUIDE.html
+UPDATE-GUIDE.html

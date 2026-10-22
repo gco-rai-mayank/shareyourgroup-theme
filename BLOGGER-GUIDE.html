@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blogger Group Directory Setup</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* One column of numbered tasks; each page task has its copy box. Dark, like the site. */
+:root{--bg:#06080c;--panel:#0c1016;--panel-2:#121821;--line:rgba(255,255,255,.09);--line-2:rgba(255,255,255,.17);--text:#eef2f7;--muted:#9aa6b7;--faint:#647083;--green:#25d366;--green-ink:#03200e;--cyan:#22d3ee;--warn:#fbbf24;
+  --display:'Space Grotesk',system-ui,sans-serif;--body:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--mono:'JetBrains Mono',ui-monospace,Consolas,monospace;color-scheme:dark}
+@media (prefers-color-scheme:light){:root{--bg:#f4f6fa;--panel:#fff;--panel-2:#eef1f6;--line:rgba(12,22,40,.1);--line-2:rgba(12,22,40,.2);--text:#0b1220;--muted:#4f5b6e;--faint:#808b9c;--green:#13a650;--cyan:#0e7490;--warn:#b45309;color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.65 var(--body)}
+a{color:var(--cyan)}
+h1,h2,h3{font-family:var(--display);letter-spacing:-.02em;line-height:1.2;text-wrap:balance}
+code,kbd{font-family:var(--mono);font-size:.84em;padding:2px 7px;border-radius:7px;background:var(--panel-2);border:1px solid var(--line)}
+.wrap{max-width:860px;margin:0 auto;padding:32px max(16px,env(safe-area-inset-right)) 80px max(16px,env(safe-area-inset-left))}
+h1{font-size:clamp(1.9rem,4.5vw,2.6rem);margin:0 0 8px}
+.lead{color:var(--muted);margin:0 0 22px}
+.prog{display:flex;align-items:center;gap:12px;margin:0 0 26px;padding:12px 16px;border-radius:14px;border:1px solid var(--line);background:var(--panel);font-size:.9rem;color:var(--muted)}
+.prog .bar{flex:1;height:8px;border-radius:99px;background:var(--panel-2);overflow:hidden}
+.prog .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--cyan));transition:width .3s}
+.task{margin:0 0 16px;padding:18px;border-radius:18px;border:1px solid var(--line);background:var(--panel);transition:border-color .2s}
+.task.done{border-color:rgba(37,211,102,.5)}
+.task-head{display:flex;align-items:flex-start;gap:12px}
+.tick{appearance:none;-webkit-appearance:none;flex:none;width:26px;height:26px;margin:2px 0 0;border-radius:8px;border:2px solid var(--line-2);background:var(--panel-2);cursor:pointer;display:grid;place-items:center}
+.tick:checked{background:var(--green);border-color:var(--green)}
+.tick:checked::after{content:'✓';color:var(--green-ink);font-weight:800}
+.tick:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.task h2{margin:0;font-size:1.2rem}
+.task .where{display:block;margin-top:2px;font:500 .78rem var(--mono);color:var(--faint)}
+.task ol{margin:12px 0 0;padding-left:22px;color:var(--muted)}
+.task li{margin:4px 0}
+.tag{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:6px;font:600 .66rem var(--mono);letter-spacing:.06em;vertical-align:middle}
+.tag.new{background:rgba(34,211,238,.15);color:var(--cyan)}
+.tag.me{background:rgba(37,211,102,.15);color:var(--green)}
+.codebox{margin-top:12px;border:1px solid var(--line-2);border-radius:12px;overflow:hidden}
+.codebox-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px 8px 14px;background:var(--panel-2);font:500 .78rem var(--mono);color:var(--faint)}
+.codebox button{height:32px;padding:0 14px;border:0;border-radius:9px;background:var(--green);color:var(--green-ink);font:700 .82rem var(--body);cursor:pointer}
+.codebox textarea{display:block;width:100%;height:120px;margin:0;padding:12px 14px;border:0;resize:vertical;background:var(--bg);color:var(--muted);font:500 .76rem/1.5 var(--mono)}
+.note{display:flex;gap:10px;margin:12px 0 0;padding:12px 14px;border-radius:12px;border:1px solid rgba(251,191,36,.4);background:rgba(251,191,36,.06);font-size:.9rem}
+.note p{margin:0}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;padding:10px 16px;border-radius:12px;background:var(--text);color:var(--bg);font-weight:600;font-size:.9rem;transition:all .25s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+/* Part headers and a placeholder table on top of the shared guide styles */
+.part{display:flex;align-items:center;gap:12px;margin:34px 0 14px}
+.part .n{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line-2);font:700 1rem var(--display)}
+.part h2{margin:0;font-size:1.45rem}
+.part p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
+.order{margin:0 0 8px;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:var(--panel);color:var(--muted)}
+.order ol{margin:6px 0 0;padding-left:22px}
+table{width:100%;border-collapse:collapse;margin:12px 0 0;font-size:.9rem}
+th,td{padding:9px 10px;border:1px solid var(--line);text-align:left;vertical-align:top}
+th{font:600 .72rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);background:var(--panel-2)}
+td code{white-space:nowrap}
+.tblwrap{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Set up the group directory on Blogger</h1>
+  <p class="lead">From an empty Google Sheet to a live directory, in about 40 minutes. Tick each task as you finish it; your ticks are saved in this browser. Wherever you see <code>YOUR-…</code>, use your own value.</p>
+  <div class="note" style="margin:0 0 14px"><span>©</span><p><b>Designed &amp; Developed by <a href="https://www.niveshsahayak.in/" rel="noopener" target="_blank">Nivesh Sahayak</a>.</b> This theme is not open-source. Ask for permission through <a href="https://www.niveshsahayak.in/" rel="noopener" target="_blank">niveshsahayak.in</a> before you use or share it, and keep the footer credit <i>Designed &amp; Developed by Nivesh Sahayak</i> with its link on your site. See <code>LICENSE</code>.</p></div>
+  <div class="order"><b>You'll need:</b><ol><li>A Google account (for the Sheet and Apps Script).</li><li>A free GitHub account.</li><li>A Blogger blog.</li></ol></div>
+  <div class="prog"><span id="count">0 of 0 done</span><div class="bar"><i id="bar"></i></div></div>
+
+  <div class="part"><span class="n">1</span><div><h2>GitHub</h2><p>Hosts the design, the scripts and the fast copy of the group list, for free.</p></div></div>
+
+  <div class="task" data-task>
+    <div class="task-head"><input aria-label="Done" class="tick" type="checkbox"><div><h2>1.1 · Create the repository</h2><span class="where">github.com → New repository</span></div></div>
+    <ol>
+      <li>Sign in at github.com → <b>+</b> → <b>New repository</b>.</li>
+      <li>Pick a name (this guide calls it <code>YOUR-REPO</code>), choose <b>Public</b> (GitHub Pages is free for public repositories) → <b>Create repository</b>.</li>
+      <li>Click <b>uploading an existing file</b> and drag in every file and folder from this project, including the <code>.github</code> folder → <b>Commit changes</b>.</li>
+    </ol>
+    <div class="note"><span>⚠️</span><p>Don't upload your filled-in <code>blogger/theme.xml</code>, your page texts or personal notes. The included <code>.gitignore</code> keeps them out when you use Git; when you drag files in by hand, leave them out yourself.</p></div>
+  </div>
+
+  <div class="task" data-task>
+    <div class="task-head"><input aria-label="Done" class="tick" type="checkbox"><div><h2>1.2 · Turn on GitHub Pages</h2><span class="where">Repository → Settings → Pages</span></div></div>
+    <ol>
+      <li><b>Settings</b> → <b>Pages</b> → <b>Build and deployment</b> → Source: <b>GitHub Actions</b>.</li>
+      <li>Your files will be served from <code>https://YOUR-GITHUB-USER.github.io/YOUR-REPO/</code>.</li>
+    </ol>
+  </div>
+
+  <div class="part"><span class="n">2</span><div><h2>Google Sheet · Apps Script</h2><p>The database and the web app that takes submissions.</p></div></div>
+
+  <div class="task" data-task>
+    <div class="task-head"><input aria-label="Done" class="tick" type="checkbox"><div><h2>2.1 · Make the sheet</h2><span class="where">sheets.google.com</span></div></div>
+    <ol>
+      <li>Create a new Google Sheet. Rename the first tab to <code>Group Links</code> (or change <code>CONFIG.SHEET</code> in <code>Code.gs</code> to match).</li>
+      <li>Click cell <b>A1</b>, click <b>Copy</b> below and paste. It fills the 12 column headings.</li>
+    </ol>
+    <div class="codebox"><div class="codebox-head"><span>row 1</span><button data-copy-box type="button">Copy</button></div><textarea aria-label="Sheet headings" readonly spellcheck="false" style="height:48px">group_link	timestamp	group_name	group_image	category	description	status	checks	last_checked	reports	added	topic</textarea></div>
+  </div>
+
+  <div class="task" data-task>
+    <div class="task-head"><input aria-label="Done" class="tick" type="checkbox"><div><h2>2.2 · Add the script</h2><span class="where">Sheet → Extensions → Apps Script</span></div></div>
+    <ol>
+      <li>In the sheet: <b>Extensions</b> → <b>Apps Script</b>.</li>
+      <li>Replace everything in <code>Code.gs</code> with <code>apps-script/Code.gs</code> from this project.</li>
+      <li>Find <code>const GH_REPO</code> and set it to <code>'YOUR-GITHUB-USER/YOUR-REPO'</code>. Save (<kbd>Ctrl</kbd> + <kbd>S</kbd>).</li>
+      <li>Optional: adjust <code>CONFIG</code>, <code>CATEGORIES</code> and <code>BLOCKED</code> at the top.</li>
+    </ol>
+  </div>
+
+  <div class="task" data-task>
+    <div class="task-head"><input aria-label="Done" class="tick" type="checkbox"><div><h2>2.3 · Deploy it as a web app</h2><span class="where">Apps Script → Deploy → New deployment</span></div></div>
+    <ol>
+      <li><b>Deploy</b> → <b>New deployment</b> → gear icon → <b>Web app</b>.</li>
+      <li>Execute as: <b>Me</b>. Who has access: <b>Anyone</b> → <b>Deploy</b> → allow the permissions.</li>
+      <li>Copy the <b>Web app URL</b> (it ends in <code>/exec</code>). This guide calls it <code>YOUR-APPS-SCRIPT-URL</code>.</li>
+    </ol>
+    <div class="note"><span>⚠️</span><p>Later updates: always use <b>Deploy → Manage deployments → ✏️ → New version</b>. A <i>new</i> deployment gets a new URL and the site would stop getting groups.</p></div>
+  </div>
+
+  <div class="task" data-task>
+    <div class="task-head"><input aria-label="Done" class="tick" type="checkbox"><div><h2>2.4 · Create the shared secret</h2><span class="where">Apps Script → Run</span></div></div>
+    <ol>
+      <li>In the function menu next to <b>▷ Run</b>, pick <b>setupGitHubHelper</b> → <b>Run</b>.</li>
+      <li>The log shows a long code. Copy it; you'll paste it into GitHub in step 3.1 as <code>ENRICH_TOKEN</code>.</li>
+    </ol>
+  </div>
+
+  <div class="task" data-task>
+    <div class="task-head"><input aria-label="Done" class="tick" type="checkbox"><div><h2>2.5 · Let the script start the GitHub job</h2><span class="where">github.com → Settings → Developer settings</span></div></div>
+    <ol>
+      <li>GitHub → your photo → <b>Settings</b> → <b>Developer settings</b> → <b>Personal access tokens</b> → <b>Fine-grained tokens</b> → <b>Generate new token</b>.</li>
+      <li>Repository access: <b>Only select repositories</b> → <code>YOUR-REPO</code>. Permissions: <b>Actions</b> → <b>Read and write</b>. Generate and copy it.</li>
+      <li>Apps Script → <b>Project Settings</b> (gear) → <b>Script properties</b> → <b>Add script property</b>: name <code>GITHUB_TOKEN</code>, value = the token → <b>Save</b>.</li>
+    </ol>
+    <div class="note"><span>🔒</span><p>Keep tokens only in Script properties and GitHub secrets. Never paste them into a file, a post or the theme.</p></div>
+  </div>
+
+  <div class="task" data-task>
+    <div class="task-head"><input aria-label="Done" class="tick" type="checkbox"><div><h2>2.6 · Install the timers</h2><span class="where">Apps Script → Run</span></div></div>
+    <ol>
+      <li>Pick <b>setup</b> → <b>Run</b>.</li>
+      <li>It installs: start the GitHub job every 15 minutes, retry unread links every 6 hours, re-check live links daily, and (if enabled) a daily random bump.</li>
+    </ol>
+  </div>
+
+  <div class="part"><span class="n">3</span><div><h2>Connect GitHub to the script</h2><p>So the job can read the list and save group names and photos.</p></div></div>
+
+  <div class="task" data-task>
+    <div class="task-head"><input aria-label="Done" class="tick" type="checkbox"><div><h2>3.1 · Add two secrets</h2><span class="where">Repository → Settings → Secrets and variables → Actions</span></div></div>
+    <ol>
+      <li><b>New repository secret</b>: name <code>APPS_SCRIPT_URL</code>, value <code>YOUR-APPS-SCRIPT-URL</code>.</li>
+      <li><b>New repository secret</b>: name <code>ENRICH_TOKEN</code>, value = the code from step 2.4.</li>
+    </ol>
+  </div>
+
+  <div class="task" data-task>
+    <div class="task-head"><input aria-label="Done" class="tick" type="checkbox"><div><h2>3.2 · Run the job once</h2><span class="where">Repository → Actions</span></div></div>
+    <ol>
+      <li><b>Actions</b> → if asked, enable workflows → <b>Sync groups + publish</b> → <b>Run workflow</b>.</li>
+      <li>After about 2 minutes, open <code>https://YOUR-GITHUB-USER.github.io/YOUR-REPO/data/groups.json</code>. You should see a list (empty brackets are fine before the first submission).</li>
+    </ol>
+  </div>
+
+  <div class="part"><span class="n">4</span><div><h2>Blogger</h2><p>Put the theme in place and add the pages.</p></div></div>
+
+  <div class="task" data-task>
+    <div class="task-head"><input aria-label="Done" class="tick" type="checkbox"><div><h2>4.1 · Fill in the theme</h2><span class="where">blogger/theme.template.xml</span></div></div>
+    <ol>
+      <li>Copy <code>blogger/theme.template.xml</code> to <code>blogger/theme.xml</code> (this copy stays on your computer).</li>
+      <li>Open it in a text editor and use Find &amp; Replace for each placeholder below.</li>
+      <li>Search for <code>EDIT</code> to change the menu, FAQ, footer links and texts. Keep the footer credit <i>Designed &amp; Developed by Nivesh Sahayak</i> and its link as they are.</li>
+    </ol>
+    <div class="tblwrap"><table>
+      <tr><th>Placeholder</th><th>Replace with</th><th>Needed?</th></tr>
+      <tr><td><code>YOUR-GITHUB-USER.github.io/YOUR-REPO</code></td><td>Your GitHub Pages address</td><td>Yes</td></tr>
+      <tr><td><code>YOUR-APPS-SCRIPT-ID</code></td><td>The id part of your web app URL</td><td>Yes</td></tr>
+      <tr><td><code>www.your-domain.com</code></td><td>Your blog's address</td><td>Yes</td></tr>
+      <tr><td><code>ca-pub-0000000000000000</code></td><td>Your AdSense publisher id</td><td>If you use AdSense</td></tr>
+      <tr><td><code>G-XXXXXXXXXX</code></td><td>Your Google Analytics id</td><td>If you use Analytics</td></tr>
+      <tr><td><code>YOUR-YANDEX-CODE</code></td><td>Your Yandex verification code, or delete that line</td><td>Optional</td></tr>
+      <tr><td><code>YOUR-PAGE</code>, <code>YOUR-NAME</code></td><td>Your social profiles</td><td>Optional</td></tr>
+    </table></div>
+  </div>
+
+  <div class="task" data-task>
+    <div class="task-head"><input aria-label="Done" class="tick" type="checkbox"><div><h2>4.2 · Back up, then upload</h2><span class="where">Blogger → Theme</span></div></div>
+    <ol>
+      <li>Blogger → <b>Theme</b> → <b>⌄</b> next to <i>Customize</i> → <b>Backup</b> → <b>Download</b>. Keep this file.</li>
+      <li>Same menu → <b>Restore</b> → upload your filled-in <code>blogger/theme.xml</code>.</li>
+      <li>Always use <b>Restore</b>, not <i>Edit HTML</i>. To undo, restore your backup.</li>
+    </ol>
+    <div class="note"><span>💡</span><p>Try it on a spare test blog first if your blog already has visitors.</p></div>
+  </div>
+
+  <div class="task" data-task>
+    <div class="task-head"><input aria-label="Done" class="tick" type="checkbox"><div><h2>4.3 · Promo card and favicon</h2><span class="where">Blogger → Layout</span></div></div>
+    <ol>
+      <li><b>Layout</b> → <b>Promo card between groups</b> → ✏️ → paste any HTML (a banner, a link, or an AdSense <code>&lt;ins&gt;</code> unit) → <b>Save</b>. It appears after every few groups and articles.</li>
+      <li><b>Layout</b> → <b>Favicon</b> → upload your own square icon (for example <code>assets/brand/favicon-512.png</code> after you replace it).</li>
+    </ol>
+  </div>
+
+  <div class="task" data-task>
+    <div class="task-head"><input aria-label="Done" class="tick" type="checkbox"><div><h2>4.4 · Add the pages</h2><span class="where">Blogger → Pages → New page → HTML view</span></div></div>
+    <ol>
+      <li>Create the pages the menu links to (submit, contact, how to join, how to share, privacy, disclaimer…), with your own text.</li>
+      <li>Where a page needs a tool, paste the matching snippet in <b>HTML view</b>. The theme fills it in.</li>
+    </ol>
+    <div class="codebox"><div class="codebox-head"><span>Submit page: the submit form</span><button data-copy-box type="button">Copy</button></div><textarea readonly spellcheck="false" style="height:48px">&lt;div data-syg="submit"&gt;&lt;/div&gt;</textarea></div>
+    <div class="codebox"><div class="codebox-head"><span>Contact page: Blogger's contact form</span><button data-copy-box type="button">Copy</button></div><textarea readonly spellcheck="false" style="height:48px">&lt;div data-syg="contact-form"&gt;&lt;/div&gt;</textarea></div>
+    <div class="codebox"><div class="codebox-head"><span>Message without saving the number</span><button data-copy-box type="button">Copy</button></div><textarea readonly spellcheck="false" style="height:48px">&lt;div data-syg="wa-direct"&gt;&lt;/div&gt;</textarea></div>
+    <div class="codebox"><div class="codebox-head"><span>Social links as cards</span><button data-copy-box type="button">Copy</button></div><textarea readonly spellcheck="false" style="height:90px">&lt;p class="pg-links"&gt;
+  &lt;a href="https://www.instagram.com/YOUR-PAGE"&gt;Instagram&lt;/a&gt;
+  &lt;a href="https://www.facebook.com/YOUR-PAGE"&gt;Facebook&lt;/a&gt;
+&lt;/p&gt;</textarea></div>
+    <div class="codebox"><div class="codebox-head"><span>A post with its own group list</span><button data-copy-box type="button">Copy</button></div><textarea readonly spellcheck="false" style="height:48px">&lt;div data-syg="groups" data-topic="short-name"&gt;&lt;/div&gt;</textarea></div>
+  </div>
+
+  <div class="part"><span class="n">5</span><div><h2>Check and run it</h2><p>Use a private window so you don't see cached copies.</p></div></div>
+
+  <div class="task" data-task>
+    <div class="task-head"><input aria-label="Done" class="tick" type="checkbox"><div><h2>5.1 · Test it</h2><span class="where">your blog</span></div></div>
+    <ol>
+      <li>Submit a test group. Its card appears at once; its name and photo fill in within about 15 minutes.</li>
+      <li>Check the header logo, dark and light mode, search, a category, Share and the report flag.</li>
+      <li>Open a blog post and each page you made.</li>
+    </ol>
+  </div>
+
+  <div class="task" data-task>
+    <div class="task-head"><input aria-label="Done" class="tick" type="checkbox"><div><h2>5.2 · Everyday running</h2><span class="where">reference</span></div></div>
+    <ol>
+      <li><b>Hide a listing:</b> set its <code>status</code> to <code>hidden</code> in the sheet. Set it back to <code>live</code> to show it.</li>
+      <li><b>Block new words:</b> edit <code>BLOCKED</code> in <code>Code.gs</code> → Deploy a new version → run <code>remoderate</code>.</li>
+      <li><b>Change the design:</b> edit <code>assets/syg.css</code> or <code>assets/syg.js</code> on GitHub; it's live in about 2 minutes.</li>
+      <li><b>Change the theme:</b> edit your <code>theme.xml</code> → Blogger → Restore. Then run <code>scripts/make-theme-template.ps1</code> if you share your copy of the project.</li>
+      <li><b>List not updating?</b> GitHub → Actions → open the latest run. If workflows are disabled, enable them.</li>
+    </ol>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(function () {
+  var KEY = 'blogger-guide-ticks', tasks = Array.prototype.slice.call(document.querySelectorAll('[data-task]')), saved = [];
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) {}
+  function sync() {
+    var done = [];
+    tasks.forEach(function (t, i) { var on = t.querySelector('.tick').checked; t.classList.toggle('done', on); if (on) done.push(i); });
+    try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) {}
+    document.getElementById('count').textContent = done.length + ' of ' + tasks.length + ' done';
+    document.getElementById('bar').style.width = (done.length / tasks.length * 100) + '%';
+  }
+  tasks.forEach(function (t, i) { var c = t.querySelector('.tick'); if (saved.indexOf(i) > -1) c.checked = true; c.addEventListener('change', sync); });
+  sync();
+  var toast = document.getElementById('toast');
+  function say(m) { toast.textContent = m; toast.classList.add('show'); clearTimeout(say.t); say.t = setTimeout(function () { toast.classList.remove('show'); }, 1800); }
+  document.querySelectorAll('[data-copy-box]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var ta = b.closest('.codebox').querySelector('textarea');
+      var fallback = function () { ta.focus(); ta.select(); say('Selected. Press Ctrl+C to copy'); };
+      try { navigator.clipboard.writeText(ta.value).then(function () { say('Copied ✓'); }, fallback); } catch (e) { fallback(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>

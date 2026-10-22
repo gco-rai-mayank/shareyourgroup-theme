@@ -1,3 +1,4 @@
+// Designed & Developed by Nivesh Sahayak (https://www.niveshsahayak.in/). All rights reserved: use or redistribution needs written permission and visible credit. See LICENSE.
 // Reads group names and photos from WhatsApp and sends them to the Apps Script.
 // Why here and not in Apps Script: WhatsApp answers Google's servers with "429 Too Many Requests".
 // Runs on GitHub Actions before build-data.mjs. Node 20+, no packages needed.

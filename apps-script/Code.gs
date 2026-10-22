@@ -1,4 +1,5 @@
 /**
+ * Designed & Developed by Nivesh Sahayak (https://www.niveshsahayak.in/). All rights reserved: use or redistribution needs written permission and visible credit. See LICENSE.
  * ShareYourGroup — Google Apps Script backend (v2)
  *
  * Replaces the old Code, RefreshXMLBatch, RemoveError, Duplicate, Filter and RandomDates files.

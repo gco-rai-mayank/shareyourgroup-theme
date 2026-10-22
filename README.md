@@ -1,145 +1,159 @@
-# shareyourgroup-theme
+# WhatsApp group directory theme for Blogger
 
-The new theme for **shareyourgroup.com**. Blogger still runs the site (domain, pages, blog, AdSense).
-This repo holds the design, the features and a fast copy of the group list.
+A Blogger theme that turns a blog into a fast, searchable directory of WhatsApp groups and channels.
+Blogger keeps the domain, pages, posts and ads. This repository holds the design, the scripts and a
+cached copy of the group list, served for free by GitHub Pages. A Google Sheet with Apps Script is
+the database.
 
-```
-blogger/theme.xml            → upload to Blogger (Theme → Restore)
-assets/syg.css               → all the design (colours at the top)
-assets/syg.js                → all the features (search, categories, submit, share, report)
-data/groups.json             → group list, rebuilt automatically every 15 min
-scripts/build-data.mjs       → builds data/groups.json from the Apps Script
-.github/workflows/…          → the 15-minute job + publishing to GitHub Pages
-data/topics/<id>.json        → one small list per blog post that has its own groups
-apps-script/Code.gs          → new Google Apps Script (replaces all 6 old script files)
-apps-script/Topics.gs        → one-time import of the 29 per-post sheets into the main sheet
-```
+For a step-by-step setup, open **[BLOGGER-GUIDE.html](BLOGGER-GUIDE.html)** in a browser.
 
-How the pieces talk:
+> **Designed & Developed by [Nivesh Sahayak](https://www.niveshsahayak.in/).**
+> This is not open-source. **Ask for permission before you use or distribute any of these files**, and
+> keep a visible credit to Nivesh Sahayak with a link to <https://www.niveshsahayak.in/> wherever they
+> are used. See [LICENSE](LICENSE).
+
+## How it works
 
 ```
-Visitor ──loads──▶ Blogger page ──loads──▶ GitHub Pages (syg.css, syg.js, groups.json)   ← instant
-        └──asks──▶ Apps Script "?since=…" ──▶ only groups added after that copy          ← ~1 s, cached 60 s
-Visitor ──submits group──▶ Apps Script ──writes──▶ Google Sheet
-GitHub Action (every 15 min) ──reads Apps Script──▶ commits groups.json ──▶ GitHub Pages
+Visitor ──opens──▶ Blogger page ──loads──▶ GitHub Pages: syg.css, syg.js, data/groups.json   (instant)
+        └──asks──▶ Apps Script ?since=…  ──▶ only groups added after that copy               (~1 s, cached 60 s)
+Visitor ──submits a group──▶ Apps Script ──writes──▶ Google Sheet
+Apps Script (every 15 min, and soon after a submission) ──starts──▶ GitHub Actions job:
+    1. scripts/enrich.mjs     reads each new link's name and photo, sends them back to the Apps Script
+    2. scripts/build-data.mjs rebuilds data/groups.json from the Apps Script
+    3. publishes the repository to GitHub Pages
 ```
 
-So nobody waits 15 minutes: the submitter sees their card at once, and every other visitor gets it on
-their next page load (or a "↑ new groups" button appears while they browse).
+A new submission shows on the submitter's screen at once, and on everyone else's next page load
+(or as a "new groups" button while they browse). Nobody waits for the 15-minute job.
 
-## Blog posts
+## Files
 
-- **57 normal articles** (mutual funds, Wealthy…): untouched. They get the new design, a breadcrumb,
-  Disqus comments (old comments keep working) and show as cards on `/search`, label pages and the homepage.
-- **54 "…-whatsapp-group-links" posts**: each had its own Google Sheet + Apps Script (29 sheets). The theme
-  finds the old form + table in the post and swaps them for a searchable card list with its own
-  "+ Add your group" button. **You don't need to edit any post.**
-  - Before `importTopics()` runs it reads the post's old sheet (slow, like today).
-  - After it runs, the list loads instantly from `data/topics/<id>.json`, and new submissions from the post
-    go to the main sheet (tagged with that post) and also appear on the homepage.
-- New posts with a group list: just put `<div data-syg="groups" data-topic="any-short-name"></div>` in the post.
+| Path | What it does |
+|---|---|
+| `blogger/theme.template.xml` | The Blogger theme with placeholders. Copy it to `blogger/theme.xml`, fill in your values, upload it in Blogger (Theme → Restore). |
+| `assets/syg.css` | All styling. Colours and fonts are CSS variables at the top; dark and light themes. |
+| `assets/syg.js` | All features: group grid, search, categories, submit form, share panel, report flag, join/rules popups, tour, blog cards, page tools. |
+| `assets/brand/` | Logo images and favicons. Replace with your own. |
+| `data/groups.json` | The cached group list. Rebuilt by the GitHub job; don't edit by hand. |
+| `data/topics/<id>.json` | Smaller lists for blog posts that show their own groups. |
+| `apps-script/Code.gs` | The backend: web app (list, submit, report), moderation, link checks, timers. |
+| `scripts/enrich.mjs` | Reads group names and photos from WhatsApp invite pages (WhatsApp blocks Google's servers, so GitHub does this). |
+| `scripts/build-data.mjs` | Downloads the live list from the Apps Script and writes `data/groups.json`. |
+| `scripts/make-theme-template.ps1` | Rebuilds the public template from your private `theme.xml`, swapping every personal value for a placeholder. |
+| `.github/workflows/sync-groups.yml` | The job above. Runs when started by the Apps Script, on GitHub's schedule as a backup, and on every push. |
 
----
+### Kept private
 
-## One-time setup (about 20 minutes)
+`.gitignore` keeps your own `blogger/theme.xml`, your page texts (`blogger/pages/`), one-time
+migration scripts and personal guides out of the repository. Only the template is public.
 
-Do the steps **in this order**. Nothing on the live site changes until step 4.
+## Settings
 
-### 1. Put this folder on GitHub
-1. Go to github.com → sign in as **gco-rai-mayank** → **New repository**.
-2. Name: `shareyourgroup-theme`, **Public**, no README → **Create repository**.
-3. Click **uploading an existing file**, then drag **everything inside this folder** (including the `.github` folder) into the page → **Commit changes**.
-   - If the `.github` folder does not upload: **Add file → Create new file**, type the name
-     `.github/workflows/sync-groups.yml`, paste the content of that file, and commit.
+### In `theme.xml` (`window.SYG`, near the end)
 
-### 2. Connect GitHub to your Apps Script
-1. In the repo: **Settings → Secrets and variables → Actions → New repository secret**.
-2. Name: `APPS_SCRIPT_URL`. Value: your web app URL (the one ending in `/exec`, same as in `blogger/theme.xml`).
-3. **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-4. **Actions** tab → if asked, click **I understand… enable workflows** → open **Sync groups + publish** → **Run workflow**.
-5. After about 2 minutes, this link should show your groups:
-   `https://gco-rai-mayank.github.io/shareyourgroup-theme/data/groups.json`
+| Key | Meaning |
+|---|---|
+| `dataUrl` | `https://YOUR-GITHUB-USER.github.io/YOUR-REPO/data/groups.json` |
+| `apiUrl` | Your Apps Script web app URL (ends in `/exec`) |
+| `perPage` | Groups loaded per scroll or per "Show more" (default 24) |
+| `adEvery` | An ad or promo card after every N groups (0 = off) |
+| `postAdEvery` | The same card after every N articles on blog lists (0 = off) |
+| `adClient`, `adSlot` | AdSense publisher id and ad unit id for the card slots. Empty `adSlot` = promo card only |
+| `disqus` | Disqus shortname for comments, or empty |
+| `siteName` | Shown in share texts and titles |
 
-### 3. Update the Apps Script (fixes the 13-second load and the missing groups)
-1. Open your Google Sheet. **File → Make a copy** first (your backup).
-2. **Extensions → Apps Script**.
-3. Open `Code.gs`, select all, delete, paste **apps-script/Code.gs** from this repo, and save.
-4. Delete the old files `RefreshXMLBatch`, `RemoveError`, `Duplicate`, `Filter`, `RandomDates` (⋮ → Delete).
-   Everything they did is now inside `Code.gs`.
-5. At the top, choose the function **migrateV2** → **Run** → allow the permissions.
-   It turns the IMPORTXML formulas into plain values and adds new columns (category, description, status…).
-   It never deletes rows: bad ones get a status like `duplicate`, `rejected` or `pending`.
-6. Choose **setup** → **Run**. This removes the old timers and installs the new ones.
-7. **+ (Add a file) → Script**, name it `Topics`, paste **apps-script/Topics.gs**, save.
-   Choose **importTopics** → **Run**. It copies the 29 blog-post sheets in, a few at a time, and keeps
-   going by itself every minute until done (open **Executions** to watch). Your old sheets are not changed.
-8. **Deploy → Manage deployments → ✏️ Edit → Version: New version → Deploy**. The URL stays the same.
+Search the theme for `EDIT` to find the menu, FAQ, footer links and social links. The footer credit
+("Designed & Developed by Nivesh Sahayak") must stay as it is.
 
-### 4. Switch the Blogger theme
-1. **Try it on a test blog first**: blogger.com → New blog (free) → Theme → ⌄ next to Customize → **Restore** → upload `blogger/theme.xml`. Open it and click around.
-2. Happy? On shareyourgroup.com: **Theme → ⌄ → Backup** (download again, just in case) → **Restore** → upload `blogger/theme.xml`.
-3. Open the site in a private window and check: home, a blog post, the Submit page, the Contact page.
+### In the Apps Script
 
-**To undo:** Theme → Restore → upload your old backup `.xml`. Takes one minute.
+| Where | What |
+|---|---|
+| `CONFIG` in `Code.gs` | Sheet name, reports before a listing is hidden, daily random bump, description length |
+| `CATEGORIES` in `Code.gs` | Category ids. Must match `CATS` in `syg.js` |
+| `BLOCKED` in `Code.gs` | Words and phrases that get a listing rejected (whole-word match) |
+| `GH_REPO` in `Code.gs` | `your-user/your-repo`, so the script can start the GitHub job |
+| Script property `ENRICH_TOKEN` | Shared secret for the GitHub job; created by `setupGitHubHelper()` |
+| Script property `GITHUB_TOKEN` | Fine-grained GitHub token, this repository only, permission *Actions: Read and write* |
 
-### 5. Small clean-ups after the switch
-- **Submit page**: the new form replaces the old one automatically. To tidy it up, edit the page
-  in HTML view and replace the old form code with: `<div data-syg="submit"></div>`
-- **Promo card between groups** (the Wealthy banner): Blogger → **Layout** → *Promo card between groups*.
-  Paste any HTML there, including an AdSense `<ins>` code. The slot is one card wide and two cards tall
-  (about 280–340 × 290–350 px), so create a **responsive display ad** in AdSense: it serves 300×250 on
-  phones and laptops and 250×250 on wide 4-column screens. Paste only the `<ins …></ins>` part; the theme
-  loads it in every ad card automatically.
-- **Contact page**: Blogger's contact form is added to `/p/contact-us.html` automatically.
+### In GitHub (Settings → Secrets and variables → Actions)
 
----
+| Secret | Value |
+|---|---|
+| `APPS_SCRIPT_URL` | Your Apps Script web app URL |
+| `ENRICH_TOKEN` | The same value as the script property |
 
-## Everyday editing
+GitHub Pages must use **Source: GitHub Actions**.
 
-| I want to… | Edit this | How |
+## Apps Script functions
+
+| Function | When it runs | What it does |
 |---|---|---|
-| Change colours or fonts | `assets/syg.css` (section 1) | GitHub → file → ✏️ → Commit |
-| Change headline, FAQ, menu, footer | `blogger/theme.xml` (search "EDIT") | Edit, then Theme → Restore in Blogger |
-| Change the "Before you share" rules or "Before you join" tips | `assets/syg.js` (`RULES_HTML`, `JOIN_TIPS`) | GitHub → file → ✏️ → Commit |
-| Change categories | `assets/syg.js` (`CATS`) **and** `apps-script/Code.gs` (`CATEGORIES`) | ids must match |
-| Change blocked words | `apps-script/Code.gs` (`BLOCKED`) | then Deploy → New version |
-| Turn the daily random "bump" off | `apps-script/Code.gs` → `BUMP_RANDOM_DAILY: 0` | then run `setup` again |
+| `doGet` | Web requests | Full list, `?since=` new groups, or the job's to-do list |
+| `doPost` | Web requests | Submit a group, report a group, save details from the GitHub job |
+| `setup` | Once, by you | Removes old timers and installs: `kickGitHub` every 15 min, `repairPending` every 6 h, `recheckLive` daily, `bumpRandom` daily |
+| `setupGitHubHelper` | Once, by you | Creates `ENRICH_TOKEN` and prints it |
+| `kickGitHub` | Timer, and after submissions | Starts the GitHub job |
+| `remoderate` | By you, after editing `BLOCKED` | Re-checks every live group against the blocked words |
+| `testFetch` | By you | Debug: reads one invite link and logs the result |
 
-Changes to `assets/` are live within ~2 minutes (browsers may keep the old copy for up to 10 minutes).
-
-## Sheet columns (after migrateV2)
+## Sheet columns
 
 | A | B | C | D | E | F | G | H | I | J | K | L |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | link | timestamp | name | image | category | description | status | checks | last_checked | reports | added | topic |
 
-`topic` = which blog-post list(s) the group belongs to (comma-separated list ids, see Topics.gs).
+`status`: `live` (shown) · `pending` (details not read yet) · `dead` (link stopped working) ·
+`hidden` (reached the report limit) · `rejected` (blocked words) · `duplicate`.
+Set a row back to `live` to show it again. Rows are never deleted by the scripts.
 
-`status`: `live` (shown) · `pending` (details not read yet, retried hourly) · `dead` (link stopped working) ·
-`hidden` (3+ reports) · `rejected` (blocked words) · `duplicate`. To show a row again, set it to `live`.
+## Page hooks
 
-## AdSense
+Put these in any Blogger page or post (HTML view). The script fills them in.
 
-The theme is built so ads can't break the layout (see section 13 of `syg.css` and `adWatch` in `syg.js`):
-
-| Situation | What the theme does |
+| Markup | Becomes |
 |---|---|
-| Auto ad dropped inside the group grid or a row | It gets a full row of its own, so cards don't squash |
-| Anchor ad (sticky bar on phones, top or bottom) | Header, tab bar, floating buttons, toast and popups move out of its way, and move back when it's closed |
-| Ad slot left empty (unfilled) | The empty "sponsored" box folds away; cards fill the space |
-| "Full width responsive" ads in cards | Switched off for the card slot, so the ad stays inside its card |
-| Ads inside blog posts | Kept inside the post width, no sideways scrolling |
+| `<div data-syg="submit"></div>` | The submit form |
+| `<div data-syg="contact-form"></div>` | Blogger's contact form gadget |
+| `<div data-syg="wa-direct"></div>` | "Message without saving the number" tool |
+| `<div data-syg="groups" data-topic="short-name"></div>` | A searchable group list for that post, with its own "Add your group" button |
+| `<p class="pg-links">` with Instagram / Facebook / Reddit / WhatsApp / Telegram links | Brand-coloured social cards |
 
-Filled ads are never hidden (that would break AdSense rules); only empty slots fold away.
+The layout gadget **Promo card between groups** (Blogger → Layout) is the promo shown in the card
+slots. Paste any HTML there, including an AdSense `<ins>` unit.
 
-Recommended AdSense settings (AdSense → Ads → shareyourgroup.com → Edit):
-- **Auto ads:** on. **In-page formats:** on. **Anchor ads:** on (the theme makes room for them). **Vignette ads:** your choice.
-- **Ad load:** start in the middle. The grid already has a slot every 6 groups.
-- **ads.txt:** Blogger adds it for you when AdSense is linked under *Settings → Monetization*.
+## Ads
+
+The theme is built so ads don't break the layout: auto ads inside the grid get a full row, anchor
+ads push the header and floating buttons out of the way, unfilled slots fold away, and card slots
+switch off "full width responsive". Filled ads are never hidden.
+
+## Everyday changes
+
+| To change… | Edit | Goes live |
+|---|---|---|
+| Colours, fonts, layout | `assets/syg.css` | ~2 min after you commit |
+| Features, texts in popups, categories | `assets/syg.js` | ~2 min after you commit |
+| Menu, FAQ, footer, settings | your `theme.xml` | Blogger → Theme → Restore |
+| Blocked words, moderation | `Code.gs` | Apps Script → Deploy → Manage deployments → edit → New version |
+
+After changing your `theme.xml`, run `scripts/make-theme-template.ps1` so the public template stays current.
 
 ## Notes
-- Scheduled GitHub jobs can pause after 60 days without repo activity. The job commits data often, so this
-  should not happen. If groups stop updating, open **Actions** and click **Enable workflow**.
-- Not carried over from the old theme: Google Translate widget, floating Ko-fi chat (now a footer link),
-  arrow-key banner, pageview counter, popular/featured posts widgets, Disqus recommendations.
-- Removed categories: Adult, Hot, Boys, Girls (AdSense risk). Old groups get a category automatically from their name.
+
+- GitHub can pause scheduled jobs on quiet repositories. The Apps Script starts the job itself, so
+  this doesn't matter; if the list stops updating, open **Actions** and enable the workflow.
+- WhatsApp may refuse to answer for a while (HTTP 429). Links it doesn't answer for are retried
+  later and are never marked dead because of it.
+
+## Credits and permission
+
+Designed & Developed by **[Nivesh Sahayak](https://www.niveshsahayak.in/)**. © 2026, all rights reserved.
+
+- **Permission first:** contact Nivesh Sahayak through <https://www.niveshsahayak.in/> before using,
+  copying, changing or sharing any part of this repository.
+- **Credit always:** every permitted use keeps the footer line *Designed & Developed by Nivesh Sahayak*,
+  linked to <https://www.niveshsahayak.in/>, and the credit notices at the top of the source files.
+
+Full terms: [LICENSE](LICENSE).

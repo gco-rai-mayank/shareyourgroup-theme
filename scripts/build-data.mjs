@@ -1,3 +1,4 @@
+// Designed & Developed by Nivesh Sahayak (https://www.niveshsahayak.in/). All rights reserved: use or redistribution needs written permission and visible credit. See LICENSE.
 // Pulls the group list from the Apps Script and writes data/groups.json (small + fast to load).
 // Runs on GitHub Actions every 15 minutes. Node 20+, no packages needed.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';

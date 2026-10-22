@@ -1,6 +1,8 @@
 /* ==========================================================
    ShareYourGroup theme — styles
    Edit colours in section 1. Everything else is layout.
+   Designed & Developed by Nivesh Sahayak (https://www.niveshsahayak.in/).
+   All rights reserved: use or redistribution needs written permission and visible credit. See LICENSE.
    ========================================================== */
 
 /* 1. DESIGN TOKENS -------------------------------------------------- */
@@ -102,11 +104,11 @@ kbd{font-family:var(--font-mono);font-size:.7rem;padding:2px 6px;border-radius:6
 .brand-mark{display:block;flex:none;width:34px;height:34px;border-radius:10px}
 .brand b{color:var(--green);font-weight:700}
 /* Logo: the user's own artwork, a dark-theme and a light-theme PNG */
-.logo-img{display:block;height:38px;width:auto;max-width:none}
+.logo-img{display:block;height:54px;width:auto;max-width:none}   /* the artwork has people above and below the Y */
 .logo-light{display:none}
 :root[data-theme='light'] .logo-light{display:block}
 :root[data-theme='light'] .logo-dark{display:none}
-@media(max-width:420px){.logo-img{height:32px}}
+@media(max-width:420px){.logo-img{height:45px}}
 .nav{margin:0 auto}
 .nav-list{display:flex;align-items:center;gap:4px;list-style:none;margin:0;padding:0}
 .nav-link{position:relative;display:flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-radius:12px;color:var(--muted);font-weight:500;font-size:.95rem;cursor:pointer;list-style:none;transition:color .2s,background .2s}
