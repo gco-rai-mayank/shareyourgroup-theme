@@ -465,7 +465,11 @@
   });
 
   /* ---------- share / deep link / report ---------- */
-  function groupUrl(g) { return location.origin + location.pathname + '?g=' + encodeURIComponent(g.id); }
+  /* branded link that opens the site filtered to this one card, e.g. /?type=channels&q=Name#explore */
+  function groupUrl(g) {
+    var p = new URLSearchParams(); p.set('type', g.ch ? 'channels' : 'groups'); p.set('q', g.name || '');
+    return location.origin + '/?' + p.toString() + '#explore';
+  }
   /* ---------- share panel: app buttons, opened inside the card ---------- */
   var APP_ICON = {
     wa: '<svg class="i f" viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm5.8 14.03c-.24.68-1.42 1.3-1.96 1.35-.5.05-.97.23-3.27-.68-2.77-1.09-4.52-3.93-4.66-4.11-.13-.18-1.11-1.48-1.11-2.82 0-1.34.7-2 .95-2.27.25-.27.54-.34.72-.34h.52c.17 0 .39-.06.61.47.24.56.79 1.92.86 2.06.07.14.11.3.02.48-.09.18-.14.3-.27.46-.14.16-.29.36-.41.48-.14.14-.28.29-.12.56.16.27.71 1.17 1.52 1.9 1.05.93 1.93 1.22 2.2 1.36.27.14.43.11.59-.07.16-.18.68-.79.86-1.06.18-.27.36-.23.61-.14.25.09 1.59.75 1.86.89.27.14.45.2.52.32.07.11.07.65-.17 1.33z"/></svg>',
@@ -476,26 +480,26 @@
     copy: '<svg class="i" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>',
     more: '<svg class="i" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>'
   };
-  /* Shares carry the real WhatsApp invite link (what people actually want), plus a line pointing back to the site. */
-  function shareText(g) { return 'Join “' + g.name + '” on WhatsApp 👇'; }
-  function shareMessage(g) { return shareText(g) + '\n' + g.link + '\n\nFind more groups like this: ' + groupUrl(g); }
+  /* Shares carry the branded site link that opens straight to this card; the invite link stays behind the join gate. */
+  function shareText(g) { return 'Join “' + g.name + '” on ShareYourGroup 👇'; }
+  function shareMessage(g) { return shareText(g) + '\n' + groupUrl(g); }
   function sharePanel(g) {
-    var url = g.link || groupUrl(g), site = groupUrl(g), msg = g.link ? shareMessage(g) : shareText(g) + '\n' + site;
+    var url = groupUrl(g), msg = shareMessage(g);
     var u = encodeURIComponent(url), m = encodeURIComponent(msg);
     var apps = [
       ['wa', 'WhatsApp', 'https://api.whatsapp.com/send?text=' + m],
-      ['tg', 'Telegram', 'https://t.me/share/url?url=' + u + '&text=' + encodeURIComponent(shareText(g) + '\nMore groups: ' + site)],
-      ['fb', 'Facebook', 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(site) + '&quote=' + m],   // Facebook only previews web pages, so it gets the listing page
-      ['x', 'X', 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText(g) + ' ' + url) + '&url=' + encodeURIComponent(site)],
+      ['tg', 'Telegram', 'https://t.me/share/url?url=' + u + '&text=' + encodeURIComponent(shareText(g))],
+      ['fb', 'Facebook', 'https://www.facebook.com/sharer/sharer.php?u=' + u + '&quote=' + encodeURIComponent(shareText(g))],
+      ['x', 'X', 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText(g)) + '&url=' + u],
       ['rd', 'Reddit', 'https://www.reddit.com/submit?url=' + u + '&title=' + encodeURIComponent(g.name + ' (WhatsApp group)')]
     ];
     return '<div class="g-share" role="group" aria-label="Share ' + esc(g.name) + '">' +
       '<div class="g-share-head"><b>Share to…</b><button aria-label="Close" class="icon-btn" data-share-close="1" type="button">' + ICON.x + '</button></div>' +
       '<div class="g-share-apps">' +
       apps.map(function (a) { return '<a aria-label="Share on ' + a[1] + '" class="app app-' + a[0] + '" data-share-app="' + a[0] + '" href="' + esc(a[2]) + '" rel="noopener" target="_blank" title="' + a[1] + '"><span>' + APP_ICON[a[0]] + '</span></a>'; }).join('') +
-      '<button aria-label="Copy WhatsApp invite link" class="app app-copy" data-copy-link="' + esc(url) + '" title="Copy invite link" type="button"><span>' + APP_ICON.copy + '</span></button>' +
+      '<button aria-label="Copy link" class="app app-copy" data-copy-link="' + esc(url) + '" title="Copy link" type="button"><span>' + APP_ICON.copy + '</span></button>' +
       (navigator.share ? '<button aria-label="More apps" class="app app-more" data-native-share="' + esc(g.id) + '" title="More apps" type="button"><span>' + APP_ICON.more + '</span></button>' : '') +
-      '</div><input aria-label="WhatsApp invite link" class="g-share-url" readonly="readonly" value="' + esc(url) + '"/></div>';
+      '</div><input aria-label="Link to this group" class="g-share-url" readonly="readonly" value="' + esc(url) + '"/></div>';
   }
   /* toggles the panel inside the card; outside a card (popups) it opens in a popup */
   function share(g, el) {
@@ -689,7 +693,7 @@
     if ((el = t.closest('[data-copy-link]'))) { track('share', { method: 'copy' }); copyText(el.getAttribute('data-copy-link'), qs('.g-share-url', el.closest('.g-share'))); return; }
     if ((el = t.closest('[data-native-share]'))) {
       var sg = byId(el.getAttribute('data-native-share'));
-      if (sg) navigator.share({ title: sg.name, text: sg.link ? shareMessage(sg) : shareText(sg) + '\n' + groupUrl(sg) }).catch(function () {});
+      if (sg) navigator.share({ title: sg.name, text: shareText(sg), url: groupUrl(sg) }).catch(function () {});
       return;
     }
     if ((el = t.closest('[data-open-tools]'))) {
@@ -895,7 +899,7 @@
       var homeOuts = qsa('.post-outer', w); if (!homeOuts.length) homeOuts = qsa('.post', w);
       var homeCards = homeOuts.map(postCard).filter(Boolean).slice(0, 6);
       if (!homeCards.length || !area) { if (area) area.remove(); return; }
-      w.innerHTML = '<div class="section-head"><div><span class="eyebrow">from the blog</span><h2>Latest guides &amp; group lists</h2></div><a class="btn btn-ghost btn-sm" href="/search">All posts →</a></div><div class="post-grid">' + homeCards.join('') + '</div>';
+      w.innerHTML = '<div class="section-head"><div><span class="eyebrow">explore communities</span><h2>Group lists by city, country &amp; topic</h2></div><a class="btn btn-ghost btn-sm" href="/search">See all lists →</a></div><div class="post-grid">' + homeCards.join('') + '</div>';
       if (slot) slot.parentNode.replaceChild(area, slot);
       area.classList.add('home-blog'); area.id = 'latest-guides';
       return;
@@ -917,9 +921,9 @@
     var outs = qsa('.post-outer', w); if (!outs.length) outs = qsa('.post', w);
     var items = outs.map(postCard).filter(Boolean);
     var q = new URLSearchParams(location.search).get('q'), lm = /^\/search\/label\/([^\/?#]+)/.exec(path);
-    var head = '<header class="feed-head"><span class="eyebrow">' + (q ? 'search' : lm ? 'topic' : 'the blog') + '</span><h1>' +
-      (q ? 'Results for “' + esc(q) + '”' : lm ? '#' + esc(decodeURIComponent(lm[1])) : 'Guides & <span class="grad">growth hacks</span>') + '</h1>' +
-      (q ? '<p>Looking for a group instead? <a class="grad" href="/?q=' + encodeURIComponent(q) + '#explore">Search groups for “' + esc(q) + '” →</a></p>' : '<p>Tips to grow, manage and protect your WhatsApp community.</p>') + '</header>';
+    var head = '<header class="feed-head"><span class="eyebrow">' + (q ? 'search' : lm ? 'topic' : 'group lists &amp; guides') + '</span><h1>' +
+      (q ? 'Results for “' + esc(q) + '”' : lm ? '#' + esc(decodeURIComponent(lm[1])) : 'Find your <span class="grad">community</span>') + '</h1>' +
+      (q ? '<p>Looking for a group instead? <a class="grad" href="/?q=' + encodeURIComponent(q) + '#explore">Search groups for “' + esc(q) + '” →</a></p>' : '<p>Hand-picked WhatsApp group links by city, country and topic, plus tips for running your own group.</p>') + '</header>';
     var list = qs('.blog-posts', w) || w;
     list.innerHTML = head + (items.length ? '<div class="post-grid">' + items.join('') + '</div>' : '<div class="empty"><div class="big">🔍</div><h3>No posts found</h3><p>Try a different keyword.</p></div>');
   })();
@@ -1005,6 +1009,32 @@
     /* Direct WhatsApp message tool */
     var wf = qs('.whatsapp_form', entry) || qs('[data-syg="wa-direct"]', entry);
     if (wf) waTool(wf);
+    socialCards(entry);
+  }
+
+  /* "Find us elsewhere": plain social links become brand-coloured cards with icons.
+     A function, not a var, because the page code runs before this point in the file. */
+  function socials() { return {
+    instagram: { name: 'Instagram', svg: '<rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.3" fill="currentColor"/>' },
+    facebook: { name: 'Facebook', svg: '<path fill="currentColor" d="M13.5 21v-7.5h2.6l.4-3.1h-3V8.5c0-.9.3-1.5 1.6-1.5h1.6V4.2c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.3H7.9v3.1h2.6V21z"/>' },
+    reddit: { name: 'Reddit', svg: '<g fill="currentColor"><ellipse cx="12" cy="14" rx="7.5" ry="5.2"/><circle cx="18.6" cy="9.6" r="1.9"/><circle cx="5.4" cy="9.6" r="1.9"/><circle cx="16.9" cy="4.4" r="1.6"/><path d="m12 8.7 1.2-5.2 3.8.9-.3 1-2.8-.7-1 4.1z"/></g><circle cx="9.3" cy="13.3" r="1.2" fill="#ff4500"/><circle cx="14.7" cy="13.3" r="1.2" fill="#ff4500"/><path d="M9.2 16.2c1.6 1.1 4 1.1 5.6 0" fill="none" stroke="#ff4500" stroke-width="1.1" stroke-linecap="round"/>' },
+    whatsapp: { name: 'WhatsApp', svg: '<path fill="currentColor" d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3zm4.4 12.6c-.2.5-1.1 1-1.6 1-.4.1-.9.1-1.5-.1-.3-.1-.8-.3-1.4-.5-2.4-1-4-3.5-4.1-3.6-.1-.2-1-1.3-1-2.5s.6-1.8.9-2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.1.1.3 0 .5l-.3.4-.4.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 1.9 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.8.9c.3.1.4.2.5.3.1.2.1.6-.1 1.1z"/>' },
+    telegram: { name: 'Telegram', svg: '<path fill="currentColor" d="M20.7 4.3 2.9 11.2c-1.2.5-1.2 1.2 0 1.5l4.6 1.4 1.7 5.4c.2.6.4.8.8.8s.6-.2.9-.5l2.2-2.1 4.6 3.4c.8.5 1.4.2 1.6-.8l3-14.1c.3-1.3-.5-1.8-1.6-1.4zM9.9 14.2l7.6-6.9c.3-.3 0-.5-.4-.2l-9.4 5.9"/>' }
+  }; }
+  function socialCards(entry) {
+    var SOCIALS = socials();
+    qsa('.pg-links', entry).forEach(function (box) {
+      var links = qsa('a', box), made = 0;
+      links.forEach(function (a) {
+        var key = Object.keys(SOCIALS).filter(function (k) { return (a.href || '').indexOf(k === 'whatsapp' ? 'whatsapp.com' : k === 'telegram' ? 't.me' : k + '.com') > -1; })[0];
+        if (!key) return;
+        var s = SOCIALS[key], handle = (a.href.replace(/\/+$/, '').split('/').pop() || '').replace(/^@/, '');
+        a.className = 'soc-card soc-card-' + key;
+        a.innerHTML = '<span class="soc-card-ic"><svg aria-hidden="true" viewBox="0 0 24 24">' + s.svg + '</svg></span><span class="soc-card-txt"><b>' + s.name + '</b><small>@' + esc(handle) + '</small></span><svg aria-hidden="true" class="soc-card-go" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        made++;
+      });
+      if (made) box.classList.add('soc-cards');
+    });
   }
 
   var COUNTRIES = 'IN 91 India|PK 92 Pakistan|BD 880 Bangladesh|NP 977 Nepal|LK 94 Sri Lanka|AE 971 UAE|SA 966 Saudi Arabia|QA 974 Qatar|KW 965 Kuwait|OM 968 Oman|BH 973 Bahrain|US 1 USA / Canada|GB 44 United Kingdom|AU 61 Australia|NZ 64 New Zealand|SG 65 Singapore|MY 60 Malaysia|ID 62 Indonesia|PH 63 Philippines|TH 66 Thailand|NG 234 Nigeria|KE 254 Kenya|GH 233 Ghana|ZA 27 South Africa|EG 20 Egypt|MA 212 Morocco|DZ 213 Algeria|TN 216 Tunisia|TR 90 Turkey|DE 49 Germany|FR 33 France|IT 39 Italy|ES 34 Spain|NL 31 Netherlands|BR 55 Brazil|MX 52 Mexico|AR 54 Argentina|CO 57 Colombia|RU 7 Russia|CN 86 China|JP 81 Japan|KR 82 South Korea'.split('|').map(function (s) { var p = s.split(' '); return { cc: p[0], code: p[1], name: p.slice(2).join(' ') }; });
