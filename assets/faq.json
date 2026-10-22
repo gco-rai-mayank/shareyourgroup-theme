@@ -1,0 +1,413 @@
+{
+  "_about": "FAQ shown on the homepage. Loaded by syg.js; edit here and it is live in about 2 minutes, no Blogger upload needed. Each item: id (link name), topic, q (question), tldr (one-line answer), steps (numbered), tips (bullets), note (small print). Simple HTML (b, i, a, code) is allowed. Designed & Developed by Nivesh Sahayak (https://www.niveshsahayak.in/).",
+  "topics": [
+    { "id": "join", "label": "Joining", "emoji": "📥", "title": "Joining WhatsApp groups" },
+    { "id": "channel", "label": "Channels", "emoji": "📣", "title": "WhatsApp channels" },
+    { "id": "share", "label": "Sharing", "emoji": "📤", "title": "Sharing your group" },
+    { "id": "safe", "label": "Safety", "emoji": "🛡️", "title": "Staying safe" },
+    { "id": "about", "label": "About", "emoji": "✨", "title": "About ShareYourGroup" }
+  ],
+  "items": [
+    {
+      "id": "join-whatsapp-group-link",
+      "topic": "join",
+      "q": "How do I join a WhatsApp group using an invite link?",
+      "tldr": "Tap the link, then hit <b>Join group</b> in WhatsApp. That’s literally it 🎉",
+      "steps": [
+        "Find a group you like here: use the search box or tap a category chip.",
+        "Tap <b>Join group</b> on its card.",
+        "Read the 3 quick safety tips and tap <b>Continue to WhatsApp</b>.",
+        "WhatsApp opens the group’s invite page with its name, photo and member count.",
+        "Tap <b>Join group</b>. You’re in ✅"
+      ],
+      "tips": [
+        "On a laptop the link opens WhatsApp Web or the desktop app. Make sure you’re logged in there first.",
+        "See <b>Request to join</b> instead? The admin approves members by hand. Tap it and wait."
+      ]
+    },
+    {
+      "id": "find-whatsapp-groups",
+      "topic": "join",
+      "q": "How do I find WhatsApp groups to join?",
+      "tldr": "Search by what you’re into, your exam, your city or your language, then filter. 🔎",
+      "steps": [
+        "Type in the search box at the top of the list, e.g. <i>jobs</i>, <i>NEET</i>, <i>cricket</i>, <i>memes</i>, <i>Punjabi</i> or <i>Dubai</i>.",
+        "Or tap a category chip like <b>Jobs &amp; Careers</b>, <b>Education &amp; Exams</b> or <b>Gaming</b>.",
+        "Use the <b>Groups / Channels</b> switch to see only one kind.",
+        "Sort by <b>Newest</b> for fresh groups or <b>A–Z</b> to browse.",
+        "Want a city or country? Open our <a href='/search'>group lists by city, country &amp; topic</a>."
+      ],
+      "tips": [
+        "Fresh groups (marked <b>NEW</b>) usually have working links and active admins.",
+        "Turn on <b>Auto</b> scroll (bottom right) to keep loading groups as you scroll."
+      ]
+    },
+    {
+      "id": "cant-join-whatsapp-group-link",
+      "topic": "join",
+      "q": "Why can’t I join a WhatsApp group from a link?",
+      "tldr": "Most of the time the link was reset, the group is full, or the admin has to approve you. 😅",
+      "steps": [
+        "<b>“This invite link was reset”</b> or <b>“Link not valid”</b>: the admin made a new link. Pick another group and tap the 🚩 on the card so we remove it.",
+        "<b>“Group is full”</b>: WhatsApp groups max out at 1,024 members. Nothing you can do; try another.",
+        "<b>“Request to join”</b>: tap it and wait for an admin to approve you.",
+        "<b>You were removed before</b>: only an admin can add you back.",
+        "<b>Nothing happens when you tap</b>: update WhatsApp from the Play Store / App Store, then copy the link and open it in Chrome or Safari."
+      ]
+    },
+    {
+      "id": "request-to-join-whatsapp-group",
+      "topic": "join",
+      "q": "What does “Request to join” mean on a WhatsApp group?",
+      "tldr": "The admin approves every new member by hand. You’re in once they say yes. ⏳",
+      "steps": [
+        "Open the invite link and tap <b>Request to join</b>.",
+        "Wait. The admins see your request in the group’s pending list.",
+        "Once approved, the group shows up in your Chats.",
+        "Changed your mind? Open the same link again and tap <b>Cancel request</b>."
+      ],
+      "tips": [
+        "No reply after a day or two? The admin may not be active. Try another group."
+      ]
+    },
+    {
+      "id": "whatsapp-group-member-limit",
+      "topic": "join",
+      "q": "How many members can a WhatsApp group have?",
+      "tldr": "Up to <b>1,024</b> members in one group, admins included. 👥",
+      "steps": [
+        "A normal group holds up to 1,024 people.",
+        "Need more? Admins use a <b>channel</b> (unlimited followers, one-way posts) or a <b>community</b> that links several groups under one roof."
+      ]
+    },
+    {
+      "id": "whatsapp-group-see-phone-number",
+      "topic": "join",
+      "q": "Will other members see my phone number in a WhatsApp group?",
+      "tldr": "Yes. In a normal group everyone can see your number. In a channel, nobody can. 👀",
+      "steps": [
+        "<b>Android</b>: tap ⋮ (top right) → <b>Settings</b> → <b>Privacy</b>. <b>iPhone</b>: tap <b>Settings</b> (bottom) → <b>Privacy</b>.",
+        "Tap <b>Profile photo</b> → choose <b>My contacts</b>.",
+        "Do the same for <b>About</b> and <b>Last seen and online</b>.",
+        "Now group strangers see your number but not your photo, bio or last seen."
+      ],
+      "tips": [
+        "Want zero exposure? Follow channels instead of joining big public groups."
+      ]
+    },
+    {
+      "id": "join-whatsapp-group-without-admin-knowing",
+      "topic": "join",
+      "q": "Can I join a WhatsApp group without the admin knowing?",
+      "tldr": "Nope. The group shows a note that you joined via the link, and admins see every member. 🙅",
+      "steps": [
+        "Just want to lurk and read updates? Follow a <b>channel</b> instead: nobody sees who follows.",
+        "Switch the list here to <b>Channels</b> to find one."
+      ]
+    },
+    {
+      "id": "leave-whatsapp-group-quietly",
+      "topic": "join",
+      "q": "How do I leave a WhatsApp group quietly?",
+      "tldr": "Exit the group: only the admins get told, not every member. 🤫",
+      "steps": [
+        "Open the group and tap its name at the top.",
+        "Scroll all the way down.",
+        "Tap <b>Exit group</b>, then <b>Exit</b> again to confirm.",
+        "Optional: tap <b>Delete group</b> afterwards to clear the chat from your phone."
+      ],
+      "tips": [
+        "Just too many pings? Tap the group name → <b>Notifications</b> / <b>Mute</b> → <b>Always</b>, and stay in."
+      ]
+    },
+    {
+      "id": "stop-being-added-to-whatsapp-groups",
+      "topic": "join",
+      "q": "How do I stop strangers adding me to WhatsApp groups?",
+      "tldr": "Set who can add you to <b>My contacts</b> in Privacy. Done in 20 seconds. 🔒",
+      "steps": [
+        "<b>Android</b>: ⋮ → <b>Settings</b> → <b>Privacy</b>. <b>iPhone</b>: <b>Settings</b> tab → <b>Privacy</b>.",
+        "Tap <b>Groups</b>.",
+        "Pick <b>My contacts</b>, or <b>My contacts except…</b> to block certain people too.",
+        "Anyone else now has to send you an invite, which you can just ignore."
+      ]
+    },
+    {
+      "id": "whatsapp-group-vs-channel",
+      "topic": "channel",
+      "q": "What’s the difference between a WhatsApp group and a channel?",
+      "tldr": "Group = two-way chat for up to 1,024 people. Channel = one-way broadcast anyone can follow. 📣",
+      "steps": [
+        "<b>Group</b>: everyone can post, react and see each other’s numbers. Best for chatting.",
+        "<b>Channel</b>: only admins post; followers read, react and vote in polls. Your number stays hidden. Best for news, deals and updates.",
+        "Here, flip the <b>Groups / Channels</b> switch to see one kind only."
+      ]
+    },
+    {
+      "id": "follow-whatsapp-channel",
+      "topic": "channel",
+      "q": "How do I follow a WhatsApp channel?",
+      "tldr": "Open the channel link and tap <b>Follow</b>. New posts land in your <b>Updates</b> tab. 🔔",
+      "steps": [
+        "Switch the list here to <b>Channels</b>.",
+        "Tap <b>Join channel</b> on a card, then <b>Continue to WhatsApp</b>.",
+        "Tap <b>Follow</b>.",
+        "Open the <b>Updates</b> tab in WhatsApp to read it any time."
+      ],
+      "tips": [
+        "To stop: open the channel → tap its name → <b>Unfollow</b>."
+      ]
+    },
+    {
+      "id": "whatsapp-channel-admin-see-number",
+      "topic": "channel",
+      "q": "Can WhatsApp channel admins see my phone number?",
+      "tldr": "No. Admins and other followers can’t see your number or profile photo. 🕶️",
+      "steps": [
+        "Admins only see totals: how many followers, and how many people reacted to a post.",
+        "Your reactions and poll votes don’t show your name or number to other followers."
+      ]
+    },
+    {
+      "id": "share-whatsapp-channel-link",
+      "topic": "channel",
+      "q": "How do I get my WhatsApp channel link?",
+      "tldr": "Open your channel → tap its name → <b>Share</b> → <b>Copy link</b>. 🔗",
+      "steps": [
+        "Open your channel in the <b>Updates</b> tab.",
+        "Tap the channel name at the top.",
+        "Tap <b>Share</b> (or <b>Share channel link</b>), then <b>Copy link</b>.",
+        "It looks like <code>https://whatsapp.com/channel/…</code>. Paste it in the box at the top of this page to list it."
+      ]
+    },
+    {
+      "id": "copy-whatsapp-group-invite-link",
+      "topic": "share",
+      "q": "How do I create or copy a WhatsApp group invite link?",
+      "tldr": "Group name → <b>Invite via link</b> → <b>Copy link</b>. Usually only admins see it. 🔗",
+      "steps": [
+        "Open your group and tap the group name at the top.",
+        "Scroll down to <b>Invite via link</b> (iPhone: <b>Invite to group via link</b>).",
+        "Tap <b>Copy link</b>. It looks like <code>https://chat.whatsapp.com/…</code>",
+        "Same screen also has <b>QR code</b> (great for posters) and <b>Reset link</b>."
+      ],
+      "tips": [
+        "Not an admin and can’t see the option? Ask an admin, or ask them to allow everyone to invite in <b>Group settings</b>."
+      ]
+    },
+    {
+      "id": "add-whatsapp-group-free",
+      "topic": "share",
+      "q": "How do I add my WhatsApp group to ShareYourGroup? Is it free?",
+      "tldr": "100% free, no account. Paste your link in the box at the top and tap <b>Drop it</b>. 🚀",
+      "steps": [
+        "Copy your group or channel invite link (see the question above).",
+        "Paste it in the box at the top of this page, or on the <a href='/p/submit-your-group-links.html'>Submit page</a>.",
+        "Tick that your group follows the sharing rules.",
+        "Pick a category and write one line about your group.",
+        "Tap <b>Publish</b>. We pull the name and photo from WhatsApp for you."
+      ]
+    },
+    {
+      "id": "how-long-group-appears",
+      "topic": "share",
+      "q": "How long does it take for my group to show up?",
+      "tldr": "Instantly. Your card pops up at the top as soon as you publish. ⚡",
+      "steps": [
+        "You see your card at the top of the list right away.",
+        "Everyone else sees it the next time they open or refresh the page.",
+        "If WhatsApp is slow to share the name and photo, they fill in within about 15 minutes."
+      ]
+    },
+    {
+      "id": "get-more-whatsapp-group-members",
+      "topic": "share",
+      "q": "How can I get more members for my WhatsApp group?",
+      "tldr": "Clear name, real photo, active chat, and share it everywhere your people hang out. 📈",
+      "steps": [
+        "Give it a clear name that says what it is, e.g. <i>Delhi Data Analyst Jobs</i>, not <i>Best Group 🔥🔥</i>.",
+        "Use a real group photo; it’s the first thing people see on your card.",
+        "Write a description that says who it’s for and how often you post.",
+        "Pin your rules inside the group and post regularly; dead groups lose members fast.",
+        "Share your card with the share button: Instagram bio, Stories, Facebook, Telegram, your WhatsApp Status.",
+        "Submit the same link again once a day to bump it back to the top."
+      ],
+      "tips": [
+        "Don’t spam other groups with your link. It gets you reported and can get your number banned."
+      ]
+    },
+    {
+      "id": "share-group-link-instagram-facebook",
+      "topic": "share",
+      "q": "Can I share my WhatsApp group link on Instagram, Facebook or Telegram?",
+      "tldr": "Yep. Tap the share button on your card and pick the app. 📲",
+      "steps": [
+        "Find your group here and tap the share button (the three dots) on its card.",
+        "Pick WhatsApp, Telegram, Facebook, X or Reddit, or tap <b>Copy</b>.",
+        "For Instagram, paste the copied link in your bio or add it as a <b>Link</b> sticker in Stories."
+      ],
+      "tips": [
+        "The ShareYourGroup link shows your description and safety tips before people join, so you get fewer randoms."
+      ]
+    },
+    {
+      "id": "bump-group-to-top",
+      "topic": "share",
+      "q": "How do I move my group back to the top of the list?",
+      "tldr": "Submit the same link again. Works once every 24 hours. ⬆️",
+      "steps": [
+        "Paste the same invite link in the box at the top.",
+        "Tap <b>Drop it</b> and <b>Publish</b>.",
+        "If it’s been 24 hours since the last bump, your card jumps back to the top."
+      ]
+    },
+    {
+      "id": "reset-link-remove-listing",
+      "topic": "share",
+      "q": "How do I reset my group link or remove my listing?",
+      "tldr": "Reset the invite link in WhatsApp; the old listing dies at our next check. 🧹",
+      "steps": [
+        "Open the group → tap its name → <b>Invite via link</b>.",
+        "Tap <b>Reset link</b> and confirm.",
+        "The old link stops working, and its card is removed at our next check.",
+        "Want the group listed again? Submit the new link."
+      ],
+      "tips": [
+        "Your card’s name and photo refresh from WhatsApp automatically. Change them in WhatsApp.",
+        "Need it gone faster? <a href='/p/contact-us.html'>Contact us</a> with the link."
+      ]
+    },
+    {
+      "id": "group-rejected-removed",
+      "topic": "share",
+      "q": "Why was my group rejected or removed?",
+      "tldr": "It broke a sharing rule, the link stopped working, or people reported it. 🚫",
+      "steps": [
+        "<b>Rules</b>: no adult or 18+ stuff, no “earn money” or money-doubling scams, no selling numbers or OTPs, no hate, violence or drugs.",
+        "<b>Dead link</b>: the link was reset, the group was deleted, or it’s full.",
+        "<b>Reports</b>: several visitors flagged it.",
+        "Fixed it or reset your link? Just submit the new link."
+      ]
+    },
+    {
+      "id": "safe-to-join-whatsapp-groups",
+      "topic": "safe",
+      "q": "Is it safe to join WhatsApp groups from the internet?",
+      "tldr": "It can be, if you treat members like strangers and lock your privacy first. 🛡️",
+      "steps": [
+        "Set your Profile photo, About and Last seen to <b>My contacts</b> (Settings → Privacy).",
+        "Never pay to join a group, and never share OTPs, PINs or bank details.",
+        "Don’t open APK files or links that ask you to install apps.",
+        "Something feels off? Leave, report it in WhatsApp, and tap the 🚩 on its card here."
+      ],
+      "note": "We block adult, scam and hate listings, re-check links and hide reported groups, but we don’t run or moderate the groups themselves."
+    },
+    {
+      "id": "spot-whatsapp-scam-group",
+      "topic": "safe",
+      "q": "How do I spot a scam WhatsApp group?",
+      "tldr": "Easy money, “VIP” fees, task jobs or anyone asking for OTPs = run. 🚩",
+      "steps": [
+        "Promises like “earn ₹5,000 daily”, “double your money” or “guaranteed profit”.",
+        "“Task” jobs: like videos, rate hotels or review maps for money.",
+        "Paying to join a “VIP” group, or a “registration fee” for a job.",
+        "Anyone asking for OTPs, UPI PINs or screen sharing.",
+        "APK files or links telling you to install an app."
+      ],
+      "tips": [
+        "Real groups never charge you to join. Leave, report it in WhatsApp and flag it here."
+      ]
+    },
+    {
+      "id": "never-share-in-whatsapp-group",
+      "topic": "safe",
+      "q": "What should I never share in a WhatsApp group?",
+      "tldr": "OTPs, passwords, UPI PIN, bank or card details, Aadhaar/PAN photos and your live location. Ever. 🔐",
+      "steps": [
+        "No real bank, company, recruiter or admin will ask for these on WhatsApp.",
+        "If someone does, block and report them right away."
+      ]
+    },
+    {
+      "id": "report-whatsapp-group",
+      "topic": "safe",
+      "q": "How do I report a WhatsApp group?",
+      "tldr": "Group name → scroll down → <b>Report group</b>. Then flag it here too. 🚨",
+      "steps": [
+        "Open the group and tap its name at the top.",
+        "Scroll down and tap <b>Report group</b>.",
+        "Choose whether to also exit the group, then confirm. WhatsApp gets the last few messages to review.",
+        "Back here, tap the 🚩 on the group’s card and pick a reason. Listings with several reports are hidden automatically."
+      ]
+    },
+    {
+      "id": "harassed-scammed-in-group",
+      "topic": "safe",
+      "q": "What do I do if someone in a group harasses or scams me?",
+      "tldr": "Screenshot, block, report, leave. Lost money in India? Call <b>1930</b> fast. 🆘",
+      "steps": [
+        "Take screenshots of the chat and the person’s number.",
+        "Tap their name or number → <b>Block</b> and <b>Report</b>.",
+        "Leave the group.",
+        "Lost money? In India call the cyber-crime helpline <b>1930</b> or report at <b>cybercrime.gov.in</b> as soon as possible, and tell your bank."
+      ]
+    },
+    {
+      "id": "what-is-shareyourgroup",
+      "topic": "about",
+      "q": "What is ShareYourGroup?",
+      "tldr": "A free directory to find and share WhatsApp group and channel links. 💚",
+      "steps": [
+        "Owners add their groups by category: jobs, education, earning, gaming, friendship and more.",
+        "You search them by topic, city or country and join in one tap.",
+        "We re-check links and remove dead or reported ones regularly."
+      ]
+    },
+    {
+      "id": "shareyourgroup-whatsapp-meta",
+      "topic": "about",
+      "q": "Is ShareYourGroup part of WhatsApp or Meta?",
+      "tldr": "No, we’re an independent directory. 🙌",
+      "steps": [
+        "WhatsApp is a trademark of Meta Platforms, Inc. We’re not connected to them.",
+        "For problems with your WhatsApp account, use WhatsApp support in the app: <b>Settings → Help</b>."
+      ]
+    },
+    {
+      "id": "message-without-saving-number",
+      "topic": "about",
+      "q": "How do I send a WhatsApp message without saving the number?",
+      "tldr": "Use our free tool, or open <code>wa.me/</code> + the full number. 💬",
+      "steps": [
+        "Open our <a href='/p/send-direct-whatsapp-message-without.html'>WhatsApp message tool</a>.",
+        "Pick the country code, e.g. +91 for India.",
+        "Type the number without the first 0.",
+        "Write your message (optional) and tap <b>Open in WhatsApp</b>. The chat opens, no contact saved."
+      ],
+      "tips": [
+        "Manual way: open <code>https://wa.me/919876543210</code> in your browser (country code + number, no + or spaces)."
+      ]
+    },
+    {
+      "id": "how-is-shareyourgroup-free",
+      "topic": "about",
+      "q": "How is ShareYourGroup free?",
+      "tldr": "Ads and a few partner links pay the bills. Listing and joining stay free, always. 🆓",
+      "steps": [
+        "Ads and partner cards are always marked <b>sponsored</b>.",
+        "We never charge to list, bump or join a group."
+      ]
+    },
+    {
+      "id": "contact-shareyourgroup",
+      "topic": "about",
+      "q": "How do I contact ShareYourGroup or ask for a removal?",
+      "tldr": "Use the contact page and include the group link. 📩",
+      "steps": [
+        "Open the <a href='/p/contact-us.html'>Contact page</a>.",
+        "Add your name, email and the group link.",
+        "Tell us what’s up (removal, report, partnership) and hit <b>Send message</b>."
+      ]
+    }
+  ]
+}

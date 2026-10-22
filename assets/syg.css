@@ -336,6 +336,18 @@ kbd{font-family:var(--font-mono);font-size:.7rem;padding:2px 6px;border-radius:6
 .faq-search input{width:100%;height:44px;padding:0 14px 0 40px;border-radius:12px;border:1px solid var(--line-2);background:var(--surface);color:var(--text);font:inherit;font-size:.92rem;outline:0}
 .faq-search input:focus{border-color:rgba(37,211,102,.6)}
 .faq-empty{padding:18px 2px;color:var(--muted)}
+.faq.is-loading{min-height:420px}
+.faq-loading{padding:18px 2px;color:var(--faint);font:500 .85rem var(--font-mono)}
+/* answer layout from assets/faq.json: tl;dr line, numbered steps, tips, small print */
+.faq-tldr{margin:0 0 12px;padding:10px 14px;border-radius:12px;background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.22);color:var(--text)}
+.faq-tldr span{display:inline-block;margin-right:6px;padding:2px 7px;border-radius:6px;background:var(--green);color:#03200e;font:700 .66rem/1.4 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;vertical-align:1px}
+.faq .faq-steps{counter-reset:fs;list-style:none;margin:0 0 10px;padding:0}
+.faq .faq-steps li{counter-increment:fs;position:relative;margin:0;padding:8px 0 8px 38px;border-bottom:1px dashed var(--line)}
+.faq .faq-steps li:last-child{border-bottom:0}
+.faq .faq-steps li::before{content:counter(fs);position:absolute;left:0;top:7px;display:grid;place-items:center;width:26px;height:26px;border-radius:8px;background:var(--surface-2);color:var(--text);font:700 .8rem/1 var(--font-display)}
+.faq .faq-tips{margin:6px 0 0;padding:10px 14px 10px 30px;border-radius:12px;background:var(--surface)}
+.faq .faq-tips li{margin:3px 0}
+.faq-note{margin:10px 0 0;color:var(--faint);font-size:.86rem}
 .faq [hidden]{display:none!important}
 .faq-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 22px}
 .faq-tabs button{height:34px;padding:0 13px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:.86rem;font-weight:500;cursor:pointer}

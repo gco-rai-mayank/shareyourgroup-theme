@@ -100,15 +100,34 @@
   }
   renderCatsMenu();
 
-  /* FAQ: topic tabs, a search box, a link for every question (#faq-…), and the FAQPage structured data */
+  /* FAQ: the questions live in assets/faq.json on GitHub, loaded when the visitor scrolls near the section
+     (or at once for a #faq-… link), so the Blogger page stays light. The FAQPage structured data is written
+     into the theme by scripts/make-faq-schema.ps1; one is built here only if the theme doesn't have it. */
   (function faq() {
-    var box = qs('[data-faq-schema]');
+    var box = qs('[data-faq-src]') || qs('[data-faq-schema]');
     if (!box) return;
-    var tab = 'all', input = qs('[data-faq-search]'), empty = qs('.faq-empty', box);
-    function slug(s) { return 'faq-' + s.toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 70); }
-    qsa('details', box).forEach(function (dt) { if (!dt.id) dt.id = slug(qs('summary', dt).textContent); });
+    var src = box.getAttribute('data-faq-src'), input = qs('[data-faq-search]'), tabsEl = qs('.faq-tabs'), tab = 'all', loaded = false;
+
+    function item(it) {
+      return '<details data-faq="' + esc(it.topic) + '" id="faq-' + esc(it.id) + '"><summary>' + it.q + '</summary><div>' +
+        '<p class="faq-tldr"><span>tl;dr</span> ' + it.tldr + '</p>' +
+        (it.steps && it.steps.length ? '<ol class="faq-steps">' + it.steps.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ol>' : '') +
+        (it.tips && it.tips.length ? '<ul class="faq-tips">' + it.tips.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ul>' : '') +
+        (it.note ? '<p class="faq-note">' + it.note + '</p>' : '') + '</div></details>';
+    }
+    function render(data) {
+      var html = '<p class="faq-empty" hidden="hidden">No question matches that. Try other words, or <a href="/p/contact-us.html">ask us</a>.</p>';
+      data.topics.forEach(function (tp) {
+        var its = data.items.filter(function (it) { return it.topic === tp.id; });
+        if (its.length) html += '<h3 class="faq-group" data-faq="' + esc(tp.id) + '">' + esc(tp.title) + '</h3>' + its.map(item).join('');
+      });
+      box.innerHTML = html;
+      if (tabsEl) tabsEl.innerHTML = '<button aria-pressed="true" data-faq-tab="all" type="button">All</button>' +
+        data.topics.map(function (tp) { return '<button aria-pressed="false" data-faq-tab="' + esc(tp.id) + '" type="button">' + tp.emoji + ' ' + esc(tp.label) + '</button>'; }).join('');
+      box.classList.remove('is-loading');
+    }
     function show() {
-      var words = (input && input.value || '').toLowerCase().split(/\s+/).filter(Boolean), shown = 0;
+      var words = (input && input.value || '').toLowerCase().split(/\s+/).filter(Boolean), shown = 0, empty = qs('.faq-empty', box);
       qsa('details', box).forEach(function (dt) {
         var text = dt.textContent.toLowerCase();
         var ok = (tab === 'all' || dt.getAttribute('data-faq') === tab) && words.every(function (w) { return text.indexOf(w) > -1; });
@@ -122,28 +141,43 @@
       });
       if (empty) empty.hidden = shown > 0;
     }
-    qsa('[data-faq-tab]').forEach(function (b) {
-      b.addEventListener('click', function () {
-        tab = b.getAttribute('data-faq-tab');
-        qsa('[data-faq-tab]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-        show();
-      });
-    });
-    if (input) input.addEventListener('input', show);
-    function openHash() {   // /#faq-how-do-i-join-… opens and shows that one question
-      var dt = location.hash.length > 5 && qs('details' + location.hash.replace(/[^#\w-]/g, ''), box);
+    function openHash() {   // /#faq-… opens that one question
+      var dt = /^#faq-[\w-]+$/.test(location.hash) && qs('details' + location.hash, box);
       if (dt) { dt.open = true; setTimeout(function () { dt.scrollIntoView({ block: 'center' }); }, 300); }
     }
-    openHash(); window.addEventListener('hashchange', openHash);
-    var items = qsa('details', box).map(function (dt) {
-      var q = qs('summary', dt), a = qs('div', dt);
-      return { '@type': 'Question', name: q.textContent.trim(), acceptedAnswer: { '@type': 'Answer', text: a.innerHTML.replace(/\s+/g, ' ').trim() } };
-    });
-    var s = d.createElement('script'); s.type = 'application/ld+json';
-    s.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: items });
-    d.head.appendChild(s);
+    function wire() {
+      qsa('[data-faq-tab]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          tab = b.getAttribute('data-faq-tab');
+          qsa('[data-faq-tab]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+          show();
+        });
+      });
+      if (input) input.addEventListener('input', show);
+      show(); openHash(); window.addEventListener('hashchange', openHash);
+      var hasSchema = qsa('script[type="application/ld+json"]').some(function (s) { return s.textContent.indexOf('FAQPage') > -1; });
+      if (hasSchema) return;
+      var s = d.createElement('script'); s.type = 'application/ld+json';
+      s.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: qsa('details', box).map(function (dt) {
+        return { '@type': 'Question', name: qs('summary', dt).textContent.trim(), acceptedAnswer: { '@type': 'Answer', text: qs('div', dt).innerHTML.replace(/\s+/g, ' ').trim() } };
+      }) });
+      d.head.appendChild(s);
+    }
+    function load() {
+      if (loaded) return; loaded = true;
+      fetch(src).then(function (r) { return r.json(); }).then(function (data) { render(data); wire(); }).catch(function () {
+        box.classList.remove('is-loading');
+        box.innerHTML = '<p class="faq-empty">Couldn’t load the questions right now. <a href="/p/contact-us.html">Ask us</a> instead.</p>';
+      });
+    }
+    if (!src) { wire(); return; }   // an older theme with the questions written inline
+    if (/^#faq-/.test(location.hash) || !('IntersectionObserver' in window)) load();
+    else {
+      var watch = new IntersectionObserver(function (es) { if (es.some(function (e) { return e.isIntersecting; })) { watch.disconnect(); load(); } }, { rootMargin: '900px 0px' });
+      watch.observe(box);
+    }
+    if (input) input.addEventListener('focus', load);
   })();
-
   /* ---------- group data ---------- */
   var CODE_RE = /(?:chat\.whatsapp\.com\/(?:invite\/)?|whatsapp\.com\/(channel)\/)([A-Za-z0-9]{15,40})/;
   var LINK_RE = /^https:\/\/(?:chat\.whatsapp\.com\/(?:invite\/)?[A-Za-z0-9]{15,40}|(?:www\.)?whatsapp\.com\/channel\/[A-Za-z0-9]{15,40})$/;
