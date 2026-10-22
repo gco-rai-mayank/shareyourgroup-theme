@@ -1,4 +1,5 @@
 name: Sync groups + publish
+# Designed & Developed by Nivesh Sahayak (https://www.niveshsahayak.in/). All rights reserved: use or redistribution needs written permission and visible credit. See LICENSE.
 
 # Every 15 minutes: read new groups' names from WhatsApp, copy the group list from the Apps Script
 # into data/groups.json, then publish to GitHub Pages. Also publishes whenever you edit a file on main.

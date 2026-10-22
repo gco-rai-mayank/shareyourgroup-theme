@@ -1,6 +1,8 @@
 /* ==========================================================
    ShareYourGroup theme — app script (no libraries needed)
    Settings come from window.SYG, set in the Blogger template.
+   Designed & Developed by Nivesh Sahayak (https://www.niveshsahayak.in/).
+   All rights reserved: use or redistribution needs written permission and visible credit. See LICENSE.
    ========================================================== */
 (function () {
   'use strict';
@@ -14,7 +16,7 @@
     postAdEvery: 4,       // the same ad card after every N articles on the blog list (0 = off)
     disqus: '',           // Disqus shortname for comments on posts/pages
     livePoll: 90,         // seconds between checks for brand-new groups (0 = off)
-    adClient: 'ca-pub-5935207738848708',
+    adClient: '',         // your AdSense publisher id (ca-pub-…), set in theme.xml
     adSlot: '',           // AdSense ad unit id for the card slots; empty = promo card only
     siteName: 'ShareYourGroup'
   }, window.SYG || {});

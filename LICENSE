@@ -1,0 +1,55 @@
+Proprietary License — All Rights Reserved
+
+Copyright (c) 2026 Nivesh Sahayak (https://www.niveshsahayak.in/). All rights reserved.
+
+1. Definitions
+   "Work" means everything in this repository: the Blogger theme and template, style sheets, scripts,
+   Google Apps Script code, GitHub workflow, guides, documentation, logos, icons and other images,
+   in source or compiled form, and any part or modified version of them.
+   "Author" means Nivesh Sahayak.
+   "You" means any person or organisation that accesses the Work.
+
+2. No licence without permission
+   The Work is not open-source and no licence is granted by publishing it. You may not use, copy,
+   modify, merge, publish, distribute, sublicense, sell, host or create derivative works from the
+   Work, in whole or in part, unless the Author has first given you written permission. Request
+   permission through https://www.niveshsahayak.in/. A permission covers only what it states and
+   may be limited in scope, time or purpose.
+
+3. Credit is a condition of every permission
+   Any use the Author permits must, for as long as the Work or any part of it is used:
+   a) keep the visible footer credit "Designed & Developed by Nivesh Sahayak", linked to
+      https://www.niveshsahayak.in/, on every page that uses the Work, unchanged and readable;
+   b) keep all copyright and credit notices at the top of the source files and in this file;
+   c) not suggest that the Author endorses your website, product or content.
+   Removing or hiding the credit ends the permission automatically.
+
+4. What this file does not restrict
+   a) Viewing the Work on GitHub, and the copying GitHub itself allows under its Terms of Service
+      (viewing and forking within GitHub), are permitted only to that extent. A fork does not grant
+      any other right in this licence.
+   b) Browsers loading the Work from the Author's own websites to display those websites.
+
+5. Excluded material
+   a) Group names, links, images and descriptions in data/ are submitted by third parties and belong
+      to their owners. They are not licensed by this file.
+   b) The ShareYourGroup name and logos are trademarks of their owner and are not licensed for any
+      use, with or without permission to use the code.
+   c) Third-party fonts, libraries and services the Work loads at run time (for example Google
+      Fonts, Google Analytics, AdSense, Blogger) remain under their own terms.
+
+6. Termination
+   Any permission ends automatically if you break this licence. You must then stop using the Work
+   and delete your copies. The Author may also withdraw a permission by written notice.
+
+7. No warranty
+   THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+   WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
+
+8. Limitation of liability
+   TO THE FULLEST EXTENT ALLOWED BY LAW, THE AUTHOR IS NOT LIABLE FOR ANY CLAIM, DAMAGES, LOSS OF
+   DATA, INCOME OR ADVERTISING ACCOUNTS, OR OTHER LIABILITY ARISING FROM THE WORK OR ITS USE.
+
+9. Governing law
+   This licence is governed by the laws of India. The courts of India have jurisdiction over any
+   dispute arising from it.
