@@ -1,0 +1,65 @@
+name: Sync groups + publish
+
+# Every 15 minutes: copy the group list from the Apps Script into data/groups.json,
+# then publish the repo to GitHub Pages. Also publishes whenever you edit a file on main.
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'   # GitHub may run it a few minutes late; that's normal
+  workflow_dispatch:          # "Run workflow" button on the Actions tab
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: sync-groups
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      publish: ${{ steps.commit.outputs.changed == 'true' || github.event_name != 'schedule' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build data/groups.json
+        # if the Apps Script is down, keep the last good list and still publish
+        continue-on-error: true
+        env:
+          APPS_SCRIPT_URL: ${{ secrets.APPS_SCRIPT_URL }}
+        run: node scripts/build-data.mjs
+      - name: Commit if changed
+        id: commit
+        run: |
+          git add data/
+          if git diff --cached --quiet -- data/; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "data: sync groups"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
