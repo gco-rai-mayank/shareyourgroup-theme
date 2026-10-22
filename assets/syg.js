@@ -11,6 +11,7 @@
     apiUrl: '',           // Google Apps Script web app (submit + fallback list)
     perPage: 24,
     adEvery: 6,           // a promo/ad card after every N groups (0 = off). The ad takes one card's space, so any number works.
+    postAdEvery: 4,       // the same ad card after every N articles on the blog list (0 = off)
     disqus: '',           // Disqus shortname for comments on posts/pages
     livePoll: 90,         // seconds between checks for brand-new groups (0 = off)
     adClient: 'ca-pub-5935207738848708',
@@ -337,9 +338,9 @@
     var lm = qs('.load-more', app), needBtn = (!io || !S.auto) && S.shown < S.view.length;
     if (needBtn && !lm) {
       app.insertAdjacentHTML('beforeend', '<div class="load-more">' +
-        '<div class="lm-meta"><span class="lm-count"></span><span class="lm-bar"><i></i></span></div>' +
-        '<button class="lm-btn" type="button"><span class="lm-ic"><svg aria-hidden="true" class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path><path d="m6 4 6 6 6-6" opacity=".45"></path></svg></span>' +
-        '<span class="lm-text"><b>Load more groups</b><small></small></span></button></div>');
+        '<button class="lm-btn" type="button"><span class="lm-ic"><svg aria-hidden="true" class="i" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"></path></svg></span>' +
+        '<span class="lm-label"></span><span class="lm-left"></span></button>' +
+        '<div class="lm-meta"><span class="lm-count"></span><span class="lm-bar"><i></i></span></div></div>');
       lm = qs('.load-more', app);
       qs('.lm-btn', lm).addEventListener('click', more);
     } else if (!needBtn && lm) { lm.remove(); return; }
@@ -347,7 +348,8 @@
       var left = S.view.length - S.shown;
       qs('.lm-count', lm).textContent = 'Showing ' + fmt(S.shown) + ' of ' + fmt(S.view.length);
       qs('.lm-bar i', lm).style.width = Math.round(S.shown / S.view.length * 100) + '%';
-      qs('.lm-text small', lm).textContent = 'next ' + Math.min(C.perPage, left) + ' · ' + fmt(left) + ' left';
+      qs('.lm-label', lm).textContent = 'Show ' + Math.min(C.perPage, left) + ' more';
+      qs('.lm-left', lm).textContent = fmt(left) + ' left';
     }
   }
   function syncSeg() { qsa('[data-type]', app).forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-type') === S.type ? 'true' : 'false'); }); }
@@ -919,13 +921,18 @@
       return;
     }
     var outs = qsa('.post-outer', w); if (!outs.length) outs = qsa('.post', w);
-    var items = outs.map(postCard).filter(Boolean);
+    var items = [], every = C.postAdEvery;
+    outs.map(postCard).filter(Boolean).forEach(function (h, i) {   // an ad card after every few articles
+      if (every && i > 0 && i % every === 0) { var ad = adCard(); if (ad) items.push(ad); }
+      items.push(h);
+    });
     var q = new URLSearchParams(location.search).get('q'), lm = /^\/search\/label\/([^\/?#]+)/.exec(path);
     var head = '<header class="feed-head"><span class="eyebrow">' + (q ? 'search' : lm ? 'topic' : 'group lists &amp; guides') + '</span><h1>' +
       (q ? 'Results for “' + esc(q) + '”' : lm ? '#' + esc(decodeURIComponent(lm[1])) : 'Find your <span class="grad">community</span>') + '</h1>' +
       (q ? '<p>Looking for a group instead? <a class="grad" href="/?q=' + encodeURIComponent(q) + '#explore">Search groups for “' + esc(q) + '” →</a></p>' : '<p>Hand-picked WhatsApp group links by city, country and topic, plus tips for running your own group.</p>') + '</header>';
     var list = qs('.blog-posts', w) || w;
     list.innerHTML = head + (items.length ? '<div class="post-grid">' + items.join('') + '</div>' : '<div class="empty"><div class="big">🔍</div><h3>No posts found</h3><p>Try a different keyword.</p></div>');
+    qsa('.g-ad ins.adsbygoogle:not([data-pushed])', list).forEach(function (ins) { pushAd(ins); });
   })();
 
   /* ---------- group list inside a blog post ----------
@@ -1037,12 +1044,13 @@
     });
   }
 
-  var COUNTRIES = 'IN 91 India|PK 92 Pakistan|BD 880 Bangladesh|NP 977 Nepal|LK 94 Sri Lanka|AE 971 UAE|SA 966 Saudi Arabia|QA 974 Qatar|KW 965 Kuwait|OM 968 Oman|BH 973 Bahrain|US 1 USA / Canada|GB 44 United Kingdom|AU 61 Australia|NZ 64 New Zealand|SG 65 Singapore|MY 60 Malaysia|ID 62 Indonesia|PH 63 Philippines|TH 66 Thailand|NG 234 Nigeria|KE 254 Kenya|GH 233 Ghana|ZA 27 South Africa|EG 20 Egypt|MA 212 Morocco|DZ 213 Algeria|TN 216 Tunisia|TR 90 Turkey|DE 49 Germany|FR 33 France|IT 39 Italy|ES 34 Spain|NL 31 Netherlands|BR 55 Brazil|MX 52 Mexico|AR 54 Argentina|CO 57 Colombia|RU 7 Russia|CN 86 China|JP 81 Japan|KR 82 South Korea'.split('|').map(function (s) { var p = s.split(' '); return { cc: p[0], code: p[1], name: p.slice(2).join(' ') }; });
+  /* a function, not a var: page code (waTool) runs before this line is reached */
+  function countries() { return 'IN 91 India|PK 92 Pakistan|BD 880 Bangladesh|NP 977 Nepal|LK 94 Sri Lanka|AE 971 UAE|SA 966 Saudi Arabia|QA 974 Qatar|KW 965 Kuwait|OM 968 Oman|BH 973 Bahrain|US 1 USA / Canada|GB 44 United Kingdom|AU 61 Australia|NZ 64 New Zealand|SG 65 Singapore|MY 60 Malaysia|ID 62 Indonesia|PH 63 Philippines|TH 66 Thailand|NG 234 Nigeria|KE 254 Kenya|GH 233 Ghana|ZA 27 South Africa|EG 20 Egypt|MA 212 Morocco|DZ 213 Algeria|TN 216 Tunisia|TR 90 Turkey|DE 49 Germany|FR 33 France|IT 39 Italy|ES 34 Spain|NL 31 Netherlands|BR 55 Brazil|MX 52 Mexico|AR 54 Argentina|CO 57 Colombia|RU 7 Russia|CN 86 China|JP 81 Japan|KR 82 South Korea'.split('|').map(function (s) { var p = s.split(' '); return { cc: p[0], code: p[1], name: p.slice(2).join(' ') }; }); }
   function flag(cc) { return String.fromCodePoint.apply(null, cc.split('').map(function (c) { return 127397 + c.charCodeAt(0); })); }
   function waTool(el) {
     el.className = 'wa-tool';
     el.innerHTML = '<label class="field"><span>Phone number</span><div class="row"><select aria-label="Country code">' +
-      COUNTRIES.map(function (c) { return '<option value="' + c.code + '">' + flag(c.cc) + ' +' + c.code + ' ' + esc(c.name) + '</option>'; }).join('') +
+      countries().map(function (c) { return '<option value="' + c.code + '">' + flag(c.cc) + ' +' + c.code + ' ' + esc(c.name) + '</option>'; }).join('') +
       '</select><input inputmode="tel" placeholder="98765 43210" type="tel"/></div></label>' +
       '<label class="field"><span>Message</span><textarea placeholder="Type your message…" rows="4"></textarea></label>' +
       '<a class="btn btn-primary" href="#" rel="noopener" style="width:100%" target="_blank">Open in WhatsApp ' + ICON.arrow + '</a>';
