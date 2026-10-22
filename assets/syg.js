@@ -13,6 +13,8 @@
     adEvery: 6,           // a promo/ad card after every N groups (0 = off). The ad takes one card's space, so any number works.
     disqus: '',           // Disqus shortname for comments on posts/pages
     livePoll: 90,         // seconds between checks for brand-new groups (0 = off)
+    adClient: 'ca-pub-5935207738848708',
+    adSlot: '',           // AdSense ad unit id for the card slots; empty = promo card only
     siteName: 'ShareYourGroup'
   }, window.SYG || {});
   if (!C.topicsUrl && /groups\.json/.test(C.dataUrl)) C.topicsUrl = C.dataUrl.replace(/groups\.json.*$/, 'topics/');
@@ -274,7 +276,16 @@
     // "full width responsive" would stretch the ad past its card on phones
     return html.replace(/\sdata-full-width-responsive=(["'])true\1/gi, ' data-full-width-responsive="false"');
   })();
-  function adCard() { return promoHtml ? '<div class="g-ad">' + promoHtml + '</div>' : ''; }
+  /* Ad slots take turns: an AdSense ad (when SYG.adSlot is set), then the promo card, and so on. */
+  var adTurn = 0;
+  function adCard() {
+    var useAdsense = C.adSlot && (adTurn % 2 === 0 || !promoHtml);
+    adTurn++;
+    if (useAdsense) {
+      return '<div class="g-ad g-ad-adsense"><ins class="adsbygoogle" data-ad-client="' + esc(C.adClient) + '" data-ad-format="rectangle" data-ad-slot="' + esc(C.adSlot) + '" data-full-width-responsive="false" style="display:block"></ins></div>';
+    }
+    return promoHtml ? '<div class="g-ad">' + promoHtml + '</div>' : '';
+  }
 
   function buildExplorer() {
     app.innerHTML =
@@ -325,9 +336,19 @@
     if (!app || !grid) return;
     var lm = qs('.load-more', app), needBtn = (!io || !S.auto) && S.shown < S.view.length;
     if (needBtn && !lm) {
-      app.insertAdjacentHTML('beforeend', '<div class="load-more"><button class="btn btn-ghost" type="button">Load more groups</button></div>');
-      qs('.load-more button', app).addEventListener('click', more);
-    } else if (!needBtn && lm) lm.remove();
+      app.insertAdjacentHTML('beforeend', '<div class="load-more">' +
+        '<div class="lm-meta"><span class="lm-count"></span><span class="lm-bar"><i></i></span></div>' +
+        '<button class="lm-btn" type="button"><span class="lm-ic"><svg aria-hidden="true" class="i" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path><path d="m6 4 6 6 6-6" opacity=".45"></path></svg></span>' +
+        '<span class="lm-text"><b>Load more groups</b><small></small></span></button></div>');
+      lm = qs('.load-more', app);
+      qs('.lm-btn', lm).addEventListener('click', more);
+    } else if (!needBtn && lm) { lm.remove(); return; }
+    if (lm && needBtn) {
+      var left = S.view.length - S.shown;
+      qs('.lm-count', lm).textContent = 'Showing ' + fmt(S.shown) + ' of ' + fmt(S.view.length);
+      qs('.lm-bar i', lm).style.width = Math.round(S.shown / S.view.length * 100) + '%';
+      qs('.lm-text small', lm).textContent = 'next ' + Math.min(C.perPage, left) + ' · ' + fmt(left) + ' left';
+    }
   }
   function syncSeg() { qsa('[data-type]', app).forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-type') === S.type ? 'true' : 'false'); }); }
   function renderChips() {
@@ -362,7 +383,7 @@
     if (S.sort === 'az') S.view.sort(function (a, b) { return a.name.localeCompare(b.name); });
     else if (S.sort === 'mix') S.view.sort(function (a, b) { return shuffleKey(a.id) - shuffleKey(b.id); });
     else S.view.sort(function (a, b) { return b.t - a.t; });
-    S.shown = 0; grid.innerHTML = ''; syncLoadBtn();
+    S.shown = 0; adTurn = 0; grid.innerHTML = ''; syncLoadBtn();
     var filtered = S.q || S.cat !== 'all' || S.type !== 'all';
     resultEl.textContent = fmt(S.view.length) + (S.view.length === 1 ? ' result' : ' results') + (S.q ? ' for “' + S.q + '”' : '') + (S.cat !== 'all' ? ' in ' + CAT[S.cat].label : '');
     resetBtn.hidden = !filtered;
@@ -455,23 +476,26 @@
     copy: '<svg class="i" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>',
     more: '<svg class="i" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>'
   };
-  function shareText(g) { return 'Join “' + g.name + '” on ' + C.siteName + ' 👇'; }
+  /* Shares carry the real WhatsApp invite link (what people actually want), plus a line pointing back to the site. */
+  function shareText(g) { return 'Join “' + g.name + '” on WhatsApp 👇'; }
+  function shareMessage(g) { return shareText(g) + '\n' + g.link + '\n\nFind more groups like this: ' + groupUrl(g); }
   function sharePanel(g) {
-    var url = groupUrl(g), text = shareText(g), u = encodeURIComponent(url), t = encodeURIComponent(text);
+    var url = g.link || groupUrl(g), site = groupUrl(g), msg = g.link ? shareMessage(g) : shareText(g) + '\n' + site;
+    var u = encodeURIComponent(url), m = encodeURIComponent(msg);
     var apps = [
-      ['wa', 'WhatsApp', 'https://api.whatsapp.com/send?text=' + encodeURIComponent(text + '\n' + url)],
-      ['tg', 'Telegram', 'https://t.me/share/url?url=' + u + '&text=' + t],
-      ['fb', 'Facebook', 'https://www.facebook.com/sharer/sharer.php?u=' + u],
-      ['x', 'X', 'https://twitter.com/intent/tweet?text=' + t + '&url=' + u],
-      ['rd', 'Reddit', 'https://www.reddit.com/submit?url=' + u + '&title=' + encodeURIComponent(g.name)]
+      ['wa', 'WhatsApp', 'https://api.whatsapp.com/send?text=' + m],
+      ['tg', 'Telegram', 'https://t.me/share/url?url=' + u + '&text=' + encodeURIComponent(shareText(g) + '\nMore groups: ' + site)],
+      ['fb', 'Facebook', 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(site) + '&quote=' + m],   // Facebook only previews web pages, so it gets the listing page
+      ['x', 'X', 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText(g) + ' ' + url) + '&url=' + encodeURIComponent(site)],
+      ['rd', 'Reddit', 'https://www.reddit.com/submit?url=' + u + '&title=' + encodeURIComponent(g.name + ' (WhatsApp group)')]
     ];
     return '<div class="g-share" role="group" aria-label="Share ' + esc(g.name) + '">' +
       '<div class="g-share-head"><b>Share to…</b><button aria-label="Close" class="icon-btn" data-share-close="1" type="button">' + ICON.x + '</button></div>' +
       '<div class="g-share-apps">' +
       apps.map(function (a) { return '<a aria-label="Share on ' + a[1] + '" class="app app-' + a[0] + '" data-share-app="' + a[0] + '" href="' + esc(a[2]) + '" rel="noopener" target="_blank" title="' + a[1] + '"><span>' + APP_ICON[a[0]] + '</span></a>'; }).join('') +
-      '<button aria-label="Copy link" class="app app-copy" data-copy-link="' + esc(url) + '" title="Copy link" type="button"><span>' + APP_ICON.copy + '</span></button>' +
+      '<button aria-label="Copy WhatsApp invite link" class="app app-copy" data-copy-link="' + esc(url) + '" title="Copy invite link" type="button"><span>' + APP_ICON.copy + '</span></button>' +
       (navigator.share ? '<button aria-label="More apps" class="app app-more" data-native-share="' + esc(g.id) + '" title="More apps" type="button"><span>' + APP_ICON.more + '</span></button>' : '') +
-      '</div><input aria-label="Listing link" class="g-share-url" readonly="readonly" value="' + esc(url) + '"/></div>';
+      '</div><input aria-label="WhatsApp invite link" class="g-share-url" readonly="readonly" value="' + esc(url) + '"/></div>';
   }
   /* toggles the panel inside the card; outside a card (popups) it opens in a popup */
   function share(g, el) {
@@ -665,7 +689,7 @@
     if ((el = t.closest('[data-copy-link]'))) { track('share', { method: 'copy' }); copyText(el.getAttribute('data-copy-link'), qs('.g-share-url', el.closest('.g-share'))); return; }
     if ((el = t.closest('[data-native-share]'))) {
       var sg = byId(el.getAttribute('data-native-share'));
-      if (sg) navigator.share({ title: sg.name, text: shareText(sg), url: groupUrl(sg) }).catch(function () {});
+      if (sg) navigator.share({ title: sg.name, text: sg.link ? shareMessage(sg) : shareText(sg) + '\n' + groupUrl(sg) }).catch(function () {});
       return;
     }
     if ((el = t.closest('[data-open-tools]'))) {
@@ -706,6 +730,99 @@
   });
 
   if (app) { buildExplorer(); load(); }
+
+  /* ---------- quick tour (first visit to the homepage, or the ? button) ---------- */
+  var isPhone = function () { return window.matchMedia('(max-width: 900px)').matches; };
+  /* EDIT: tour steps (sel = what to highlight) */
+  function tourSteps() {
+    return [
+      { sel: 'form[data-drop]', title: 'Drop your group 🚀', text: 'Paste a WhatsApp group or channel invite link here and tap Drop it. It goes live in seconds, no signup.' },
+      { sel: '#sygSearch', title: 'Search everything', text: 'Type a topic, city or exam: jobs, Dubai, NEET… On a keyboard, press / to jump here.' },
+      { sel: '#syg-app .chips', title: 'Browse by category', text: 'Tap a category to see only those groups. The number shows how many are listed.' },
+      { sel: '#syg-app .seg', title: 'Groups or channels', text: 'In groups everyone can chat. Channels are one-way updates and keep your number hidden.' },
+      { sel: '#syg-app .grid .g-card .g-actions', title: 'Join, share or report', text: 'Join shows a few safety tips first. Share sends the group to WhatsApp, Telegram and more. The flag reports a bad or dead link.' },
+      { sel: '#autoToggle', title: 'Auto-scroll', text: 'ON keeps loading groups as you scroll. Turn it OFF to reach the bottom of the page and load more with a button.' },
+      { sel: isPhone() ? '.tabbar .tab-add' : '.header-cta', title: 'Submit any time', text: 'This button opens the submit form from anywhere on the site.' },
+      { sel: isPhone() ? '#menuToggle' : '.tour-btn', title: 'That’s it! 🎉', text: isPhone() ? 'Replay this tour any time from the menu → Take a quick tour.' : 'Replay this tour any time with this ? button.' }
+    ];
+  }
+  var tour = null;
+  function visible(el) { if (!el) return false; var r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden'; }
+  function isFixed(el) { for (var n = el; n && n !== body; n = n.parentElement) { if (getComputedStyle(n).position === 'fixed') return true; } return false; }
+  function startTour() {
+    if (tour || !app) return;
+    closeDialog(); setNav(false);
+    var steps = tourSteps().filter(function (s) { return visible(qs(s.sel)); });
+    if (!steps.length) return;
+    var box = d.createElement('div');
+    box.className = 'tour'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-labelledby', 'tourTitle');
+    box.innerHTML = '<div class="tour-spot"></div><div class="tour-pop"><div class="tour-count"></div><h3 id="tourTitle"></h3><p></p>' +
+      '<div class="tour-btns"><button class="tour-skip" type="button">Skip tour</button><span></span><button class="btn btn-ghost btn-sm tour-back" type="button">Back</button><button class="btn btn-primary btn-sm tour-next" type="button">Next</button></div></div>';
+    body.appendChild(box);
+    tour = { box: box, steps: steps, i: 0 };
+    qs('.tour-next', box).addEventListener('click', function () { tourGo(tour.i + 1); });
+    qs('.tour-back', box).addEventListener('click', function () { tourGo(tour.i - 1); });
+    qs('.tour-skip', box).addEventListener('click', endTour);
+    box.addEventListener('click', function (e) { if (e.target === box) tourGo(tour.i + 1); });
+    window.addEventListener('resize', placeTour); window.addEventListener('scroll', placeTour, { passive: true });
+    track('tour_start');
+    tourGo(0);
+  }
+  function tourGo(i) {
+    if (!tour) return;
+    if (i >= tour.steps.length) { track('tour_done'); endTour(); return; }
+    tour.i = Math.max(0, i);
+    var s = tour.steps[tour.i], el = qs(s.sel), box = tour.box;
+    qs('.tour-count', box).textContent = (tour.i + 1) + ' / ' + tour.steps.length;
+    qs('h3', box).textContent = s.title; qs('p', box).textContent = s.text;
+    qs('.tour-back', box).hidden = tour.i === 0;
+    qs('.tour-next', box).textContent = tour.i === tour.steps.length - 1 ? 'Done' : 'Next';
+    if (!isFixed(el)) {
+      var r = el.getBoundingClientRect();
+      window.scrollTo({ top: Math.max(0, r.top + window.pageYOffset - (window.innerHeight / 2 - Math.min(r.height, 300) / 2)), behavior: 'instant' });
+    }
+    tour.el = el; placeTour();
+    qs('.tour-next', box).focus({ preventScroll: true });
+  }
+  function placeTour() {
+    if (!tour || !tour.el) return;
+    var r = tour.el.getBoundingClientRect(), pad = 8, spot = qs('.tour-spot', tour.box), pop = qs('.tour-pop', tour.box);
+    spot.style.cssText = 'top:' + (r.top - pad) + 'px;left:' + (r.left - pad) + 'px;width:' + (r.width + pad * 2) + 'px;height:' + (r.height + pad * 2) + 'px';
+    var pw = pop.offsetWidth, ph = pop.offsetHeight, vw = window.innerWidth, vh = window.innerHeight, gap = 14;
+    var top = r.bottom + pad + gap;
+    if (top + ph > vh - 10) top = r.top - pad - gap - ph;          // not enough room below: go above
+    if (top < 10) top = Math.min(vh - ph - 10, Math.max(10, r.bottom + pad + gap));
+    var left = Math.min(vw - pw - 12, Math.max(12, r.left + r.width / 2 - pw / 2));
+    pop.style.top = top + 'px'; pop.style.left = left + 'px';
+  }
+  function endTour() {
+    if (!tour) return;
+    tour.box.remove(); tour = null; store('syg-tour-done', 1);
+    window.removeEventListener('resize', placeTour); window.removeEventListener('scroll', placeTour);
+  }
+  d.addEventListener('keydown', function (e) {
+    if (!tour) return;
+    if (e.key === 'Escape') endTour();
+    if (e.key === 'ArrowRight') tourGo(tour.i + 1);
+    if (e.key === 'ArrowLeft') tourGo(tour.i - 1);
+  });
+  d.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-tour]');
+    if (!t) return;
+    e.preventDefault();
+    if (app) { startTour(); } else location.href = '/#tour';
+  });
+  /* first visit: start once groups are on screen (not when someone opened a shared group link) */
+  function maybeAutoTour() {
+    if (!app || tour) return;
+    var asked = location.hash === '#tour';
+    if (!asked && (store('syg-tour-done') || new URLSearchParams(location.search).get('g'))) return;
+    var tries = 0, wait = setInterval(function () {
+      if (qs('#syg-app .grid .g-card:not(.sk)') && !(dlg && dlg.open)) { clearInterval(wait); setTimeout(startTour, asked ? 200 : 1200); }
+      else if (++tries > 40) clearInterval(wait);
+    }, 250);
+  }
+  maybeAutoTour();
 
   /* ---------- AdSense: keep the layout steady ----------
      - anchor ads (sticky bar at the top/bottom of phones): measure them and move the header,

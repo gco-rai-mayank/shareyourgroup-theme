@@ -40,6 +40,8 @@ const BLOCKED = [
   // adult
   'porn', 'porno', 'xxx', 'sex', 'sexy', 'nude', 'nudes', 'erotic', 'adult', '18+', 'milf', 'blowjob', 'escort', 'escorts', 'call girl', 'call girls',
   'hot girl', 'hot girls', 'hot video', 'hot videos', 'bdsm', 'bokep', 'onlyfans', 'nangi', 'desi bhabhi', 'sex chat', 'video call girl',
+  'chatting girl', 'chatting girls', 'chat girl', 'chat girls', 'girls chat', 'girl chat', 'hot chat', 'sexy chat', 'dirty chat',
+  'video call', 'bhabhi', 'aunty', 'aunties', 'desi girl', 'desi girls', 'paid friendship', 'friendship club', 'night chat', 'lonely girl', 'single girls',
   // abuse
   'madarchod', 'behenchod', 'bhenchod', 'chutiya', 'randi', 'chut', 'gaand', 'gandu', 'bhosdike', 'bhosadike', 'lund', 'fucker', 'slut', 'whore',
   // hate
@@ -184,7 +186,8 @@ function enrich(items) {
       const image = /^https:\/\/(?:pps|mmg)\.whatsapp\.net\//.test(it.image || '') ? String(it.image) : '';
       if (name && !GENERIC_NAME.test(name)) {
         let status = r.status;
-        if (status === 'pending' || status === '') status = isBlocked(name + ' ' + r.desc) ? 'rejected' : 'live';
+        if (status === 'pending' || status === '') status = 'live';
+        if (status === 'live' && isBlocked(name + ' ' + r.desc)) status = 'rejected';   // also catches live groups renamed to something bad
         if (status === 'live' && r.status !== 'live') nowLive++;
         sheet.getRange(r.row, COL.NAME, 1, 2).setValues([[name, image || r.image]]);
         sheet.getRange(r.row, COL.STATUS, 1, 3).setValues([[status, 0, now]]);
@@ -369,6 +372,20 @@ function migrateV2() {
   SpreadsheetApp.flush();
   const count = s => out.filter(r => r[COL.STATUS - 1] === s).length;
   Logger.log('Done. live=%s pending=%s duplicate=%s rejected=%s dead=%s', count('live'), count('pending'), count('duplicate'), count('rejected'), count('dead'));
+}
+
+/**
+ * Run after changing the BLOCKED word list: checks every live group again and sets status "rejected"
+ * for the ones that match. Nothing is deleted; set a row back to "live" to undo.
+ */
+function remoderate() {
+  const sheet = getSheet();
+  let n = 0;
+  readRows(sheet).forEach(r => {
+    if (r.status === 'live' && isBlocked(r.name + ' ' + r.desc)) { sheet.getRange(r.row, COL.STATUS).setValue('rejected'); n++; }
+  });
+  CacheService.getScriptCache().put('gen', String(Date.now()), 21600);
+  Logger.log('Rejected %s live groups that match the blocked words.', n);
 }
 
 /** Run once after migrateV2(). Removes ALL old triggers (including the IMPORTXML batch ones) and adds the new ones. */
