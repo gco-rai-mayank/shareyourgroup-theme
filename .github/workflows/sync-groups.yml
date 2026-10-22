@@ -30,6 +30,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Read new groups' names and photos from WhatsApp
+        # WhatsApp blocks Google's servers, so GitHub reads the details and sends them to the Apps Script
+        continue-on-error: true
+        env:
+          APPS_SCRIPT_URL: ${{ secrets.APPS_SCRIPT_URL }}
+          ENRICH_TOKEN: ${{ secrets.ENRICH_TOKEN }}
+        run: node scripts/enrich.mjs
       - name: Build data/groups.json
         # if the Apps Script is down, keep the last good list and still publish
         continue-on-error: true

@@ -64,7 +64,9 @@ const LINK_RE = /^https:\/\/(?:chat\.whatsapp\.com\/(?:invite\/)?([A-Za-z0-9]{15
  *                  submissions show up for everyone right away). Cached for 60 seconds.
  */
 function doGet(e) {
-  const since = e && e.parameter && Date.parse(e.parameter.since);
+  const p = (e && e.parameter) || {};
+  if (p.action === 'todo') return json(okToken(p.token) ? todoRows() : { ok: false, message: 'bad token' });
+  const since = Date.parse(p.since);
   if (since) {
     const cache = CacheService.getScriptCache();
     const key = 'since_' + Math.floor(since / 1000) + '_' + (cache.get('gen') || 0);   // "gen" changes on every new listing
@@ -100,7 +102,72 @@ function doPost(e) {
   let data = {};
   try { data = JSON.parse((e && e.postData && e.postData.contents) || '{}'); } catch (err) { return json({ ok: false, message: 'Bad request' }); }
   if (data.action === 'report') return json(report(data));
+  if (data.action === 'enrich') return json(okToken(data.token) ? enrich(data.items) : { ok: false, message: 'bad token' });
   return json(submit(data));
+}
+
+/* ------------------------------------------------------------------ GitHub helper
+   WhatsApp answers Google's servers with "429 Too Many Requests" (all Apps Script projects share them),
+   so the GitHub job reads the group details instead:
+     GET  ?action=todo&token=…           → links that need a name/photo, plus the least recently checked live ones
+     POST {action:'enrich', token, items} → saves what GitHub found
+   The token stops strangers from writing to the sheet. Create it once with setupGitHubHelper(). */
+
+function setupGitHubHelper() {
+  const props = PropertiesService.getScriptProperties();
+  let t = props.getProperty('ENRICH_TOKEN');
+  if (!t) { t = Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, ''); props.setProperty('ENRICH_TOKEN', t); }
+  Logger.log('Copy this into GitHub → Settings → Secrets → Actions → New secret named ENRICH_TOKEN:');
+  Logger.log(t);
+}
+
+function okToken(t) {
+  const real = PropertiesService.getScriptProperties().getProperty('ENRICH_TOKEN');
+  return !!real && t === real;
+}
+
+function todoRows() {
+  const rows = readRows();
+  const byChecked = (a, b) => (new Date(a.checked || 0)) - (new Date(b.checked || 0));
+  const pending = rows.filter(r => r.status === 'pending' && r.code).sort(byChecked).slice(0, 60);
+  const live = rows.filter(r => r.status === 'live' && r.code).sort(byChecked).slice(0, 80 - pending.length);
+  return pending.concat(live).map(r => ({ link: r.link, status: r.status }));
+}
+
+function enrich(items) {
+  if (!Array.isArray(items) || !items.length) return { ok: true, updated: 0 };
+  const lock = LockService.getScriptLock();
+  if (!lock.tryLock(20000)) return { ok: false, message: 'busy' };
+  let updated = 0, nowLive = 0;
+  try {
+    const sheet = getSheet();
+    const byCode = {};
+    readRows(sheet).forEach(r => { if (r.code) byCode[r.code] = r; });
+    const now = new Date();
+    items.forEach(it => {
+      const p = parseLink(it && it.link);
+      const r = p && byCode[p.code];
+      if (!r) return;
+      const name = clean(it.name).slice(0, 120);
+      const image = /^https:\/\/(?:pps|mmg)\.whatsapp\.net\//.test(it.image || '') ? String(it.image) : '';
+      if (name && !GENERIC_NAME.test(name)) {
+        let status = r.status;
+        if (status === 'pending' || status === '') status = isBlocked(name + ' ' + r.desc) ? 'rejected' : 'live';
+        if (status === 'live' && r.status !== 'live') nowLive++;
+        sheet.getRange(r.row, COL.NAME, 1, 2).setValues([[name, image || r.image]]);
+        sheet.getRange(r.row, COL.STATUS, 1, 3).setValues([[status, 0, now]]);
+        updated++;
+      } else if (it.dead === true) {
+        const checks = (Number(r.checks) || 0) + 1;
+        sheet.getRange(r.row, COL.STATUS, 1, 3).setValues([[checks >= CONFIG.MAX_CHECKS ? 'dead' : r.status, checks, now]]);
+        updated++;
+      }
+    });
+    if (nowLive || updated) CacheService.getScriptCache().put('gen', String(Date.now()), 21600);
+  } finally {
+    lock.releaseLock();
+  }
+  return { ok: true, updated: updated, nowLive: nowLive };
 }
 
 function submit(data) {
@@ -132,16 +199,19 @@ function submit(data) {
     }
 
     const meta = fetchMeta(parsed.link);
+    if (meta.dead) {
+      return { ok: false, status: 'dead', message: 'WhatsApp says this invite link doesn’t work. It may have been reset. Copy a fresh link from the group and try again.' };
+    }
     let status = meta.name ? 'live' : 'pending';
     if (isBlocked(meta.name + ' ' + desc)) status = 'rejected';
 
-    const values = [parsed.link, now, meta.name, meta.image, cat, desc, status, meta.name ? 0 : 1, now, 0, now, addTopic(existing && existing.topic, topic)];
+    const values = [parsed.link, now, meta.name, meta.image, cat, desc, status, 0, now, 0, now, addTopic(existing && existing.topic, topic)];
     if (existing) sheet.getRange(existing.row, 1, 1, values.length).setValues([values]);
     else sheet.appendRow(values);
     if (status === 'live') CacheService.getScriptCache().put('gen', String(Date.now()), 21600);
 
     if (status === 'rejected') return { ok: true, status, message: 'This group can’t be listed because it breaks our rules.' };
-    if (status === 'pending') return { ok: true, status, message: 'Got it! We couldn’t read the group details yet — we’ll retry automatically and it will appear soon.' };
+    if (status === 'pending') return { ok: true, status, message: 'Got it! We’re fetching your group’s name and photo from WhatsApp. It will appear on the site within about 15 minutes.' };
     return { ok: true, status, name: meta.name, image: meta.image, message: 'You’re live! Share your listing to get members faster.' };
   } finally {
     lock.releaseLock();
@@ -207,9 +277,13 @@ function checkRows(sheet, rows) {
         const status = r.status === 'pending' ? (isBlocked(m.name + ' ' + r.desc) ? 'rejected' : 'live') : r.status;
         sheet.getRange(r.row, COL.NAME, 1, 2).setValues([[m.name, m.image || r.image]]);
         sheet.getRange(r.row, COL.STATUS, 1, 3).setValues([[status, 0, now]]);
-      } else {
+      } else if (m.dead) {
+        // WhatsApp clearly said the link doesn't work: count it, and mark dead after a few clear answers
         const checks = (Number(r.checks) || 0) + 1;
         sheet.getRange(r.row, COL.STATUS, 1, 3).setValues([[checks >= CONFIG.MAX_CHECKS ? 'dead' : r.status, checks, now]]);
+      } else {
+        // no clear answer (blocked or error): don't count it against the group, just try again later
+        sheet.getRange(r.row, COL.CHECKED).setValue(now);
       }
     });
   }
@@ -234,7 +308,7 @@ function migrateV2() {
     const parsed = parseLink(String(row[0]));
     const name = clean(shown[i][COL.NAME - 1]);
     let image = String(shown[i][COL.IMAGE - 1] || '');
-    if (!/^https:\/\/pps\.whatsapp\.net\//.test(image)) image = '';
+    if (!/^https:\/\/(?:pps|mmg)\.whatsapp\.net\//.test(image)) image = '';
     let status = String(row[COL.STATUS - 1] || '');
     if (!status) {
       if (!parsed) status = 'dead';
@@ -306,27 +380,82 @@ function parseLink(v) {
 
 const FETCH_OPTS = { muteHttpExceptions: true, followRedirects: true, headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ShareYourGroupBot/2.0; +https://www.shareyourgroup.com)', 'Accept-Language': 'en' } };
 
+const PLAIN_OPTS = { muteHttpExceptions: true, followRedirects: true };
+
+/**
+ * Result of reading an invite page:
+ *   { name, image, dead }  dead = true only when WhatsApp clearly says the link doesn't work
+ *   (a real invite page with an empty name). A blocked or broken answer is "unknown": no name, dead = false,
+ *   so a good group is never marked dead just because Google's servers were refused.
+ */
+/** Tries the link a few ways (WhatsApp sometimes answers Google's servers differently) until it gets a clear answer. */
 function fetchMeta(url) {
-  try { return parseMeta(UrlFetchApp.fetch(url, FETCH_OPTS)); } catch (e) { return { name: '', image: '' }; }
+  const tries = [[url, FETCH_OPTS], [url, PLAIN_OPTS]];
+  const code = (/([A-Za-z0-9]{15,40})$/.exec(url) || [])[1];
+  if (code && url.indexOf('chat.whatsapp.com') > -1) tries.push(['https://chat.whatsapp.com/invite/' + code, PLAIN_OPTS]);
+  let best = { name: '', image: '', dead: false };
+  for (let i = 0; i < tries.length; i++) {
+    try {
+      const m = parseMeta(UrlFetchApp.fetch(tries[i][0], tries[i][1]));
+      if (m.name) return m;
+      if (m.dead) best = m;            // keep trying the other ways before believing it
+    } catch (e) {}
+  }
+  return best;
 }
 
 function fetchMetaMany(urls) {
+  let metas;
   try {
-    return UrlFetchApp.fetchAll(urls.map(u => Object.assign({ url: u }, FETCH_OPTS))).map(parseMeta);
+    metas = UrlFetchApp.fetchAll(urls.map(u => Object.assign({ url: u }, FETCH_OPTS))).map(parseMeta);
   } catch (e) {
-    return urls.map(fetchMeta);
+    metas = urls.map(() => ({ name: '', image: '', dead: false }));
   }
+  return metas.map((m, i) => m.name ? m : fetchMeta(urls[i]));   // second chance for the misses
 }
 
 function parseMeta(res) {
-  if (!res || res.getResponseCode() !== 200) return { name: '', image: '' };
+  if (!res || res.getResponseCode() !== 200) return { name: '', image: '', dead: false };
   const html = res.getContentText('UTF-8');
-  const name = clean(metaContent(html, 'og:title'));
-  const image = metaContent(html, 'og:image');
+  const isInvitePage = /property=["']og:site_name["'][^>]*WhatsApp/i.test(html) && /property=["']og:title["']/i.test(html);
+  let name = clean(metaContent(html, 'og:title'));
+  let image = metaContent(html, 'og:image');
+  // backup: the invite page also shows the name in a heading and the photo in an <img>
+  // backup only when the page has no og:title tag at all (an empty one means "dead link")
+  if (!/property=["']og:title["']/i.test(html)) {
+    const h = /<h3[^>]*class="[^"]*_9scr[^"]*"[^>]*>([\s\S]*?)<\/h3>/i.exec(html);
+    if (h) name = clean(decodeEntities(h[1]));
+  }
+  if (!/^https:\/\/(?:pps|mmg)\.whatsapp\.net\//.test(image)) {
+    const im = /<img[^>]+src="(https:\/\/(?:pps|mmg)\.whatsapp\.net\/[^"]+)"/i.exec(html);
+    if (im) image = decodeEntities(im[1]);
+  }
+  name = GENERIC_NAME.test(name) ? '' : name;
   return {
-    name: GENERIC_NAME.test(name) ? '' : name,
-    image: /^https:\/\/pps\.whatsapp\.net\//.test(image) ? image : ''
+    name: name,
+    image: /^https:\/\/(?:pps|mmg)\.whatsapp\.net\//.test(image) ? image : '',
+    dead: isInvitePage && !name
   };
+}
+
+/**
+ * TEST: run this from the editor (choose testFetch → Run, then open "Execution log").
+ * It shows exactly what WhatsApp sends to Google's servers for one link.
+ */
+function testFetch() {
+  const url = 'https://chat.whatsapp.com/HvHAYELY14WAx5ECyY41MV';
+  [['with our browser name', FETCH_OPTS], ['plain', PLAIN_OPTS]].forEach(t => {
+    try {
+      const res = UrlFetchApp.fetch(url, t[1]);
+      const html = res.getContentText('UTF-8');
+      Logger.log('[%s] status=%s size=%s og:title=%s og:image=%s <title>=%s', t[0], res.getResponseCode(), html.length,
+        metaContent(html, 'og:title') || '(none)', metaContent(html, 'og:image') ? 'yes' : 'no', ((/<title[^>]*>([^<]*)/i.exec(html) || [])[1] || '').trim());
+      Logger.log('[%s] page starts: %s', t[0], html.slice(0, 400).replace(/\s+/g, ' '));
+    } catch (e) {
+      Logger.log('[%s] ERROR: %s', t[0], e);
+    }
+  });
+  Logger.log('Result the script would save: %s', JSON.stringify(fetchMeta(url)));
 }
 
 function metaContent(html, prop) {
