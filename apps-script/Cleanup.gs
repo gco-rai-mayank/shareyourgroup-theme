@@ -6,7 +6,12 @@
  * <meta …> and <body> (and their closing tags). Blogger already writes the real title and description,
  * so these were duplicates. Scripts, styles, links and the post text are left exactly as they are.
  *
- * Setup: Apps Script editor → Services (+) → "Blogger API" (v3, identifier "Blogger") → Add.
+ * Setup: make a NEW, separate Apps Script project (script.google.com → New project) so your main script
+ * isn't affected. Project Settings → tick "Show appsscript.json", and put this in appsscript.json:
+ *   { "timeZone": "Asia/Kolkata", "runtimeVersion": "V8", "exceptionLogging": "STACKDRIVER",
+ *     "oauthScopes": ["https://www.googleapis.com/auth/blogger", "https://www.googleapis.com/auth/drive",
+ *                     "https://www.googleapis.com/auth/script.external_request", "https://www.googleapis.com/auth/script.scriptapp"] }
+ * Then paste this file as Code.gs.
  * 1. cleanupPreview()  Changes nothing. Logs how many posts would change and one before/after example.
  * 2. cleanupRun()      Saves a backup of every post it changes to Google Drive, then fixes the posts,
  *                      about 40 per run, and starts itself again every minute until all are done.
@@ -30,15 +35,31 @@ function cleanBody_(html) {
   return after.replace(/\n[ \t]*\n(?:[ \t]*\n)+/g, '\n\n');    // collapse the blank lines left behind
 }
 
+/** Calls the Blogger API v3 with your own Google sign-in. */
+function api_(path, method, body) {
+  const res = UrlFetchApp.fetch('https://www.googleapis.com/blogger/v3/' + path, {
+    method: method || 'get', contentType: 'application/json', muteHttpExceptions: true,
+    headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
+    payload: body ? JSON.stringify(body) : undefined
+  });
+  const code = res.getResponseCode(), text = res.getContentText();
+  if (code >= 300) throw new Error('Blogger API ' + code + ': ' + text.slice(0, 500));
+  return text ? JSON.parse(text) : {};
+}
+
 function blogId_() {
-  return Blogger.Blogs.getByUrl(CLEAN.BLOG_URL).id;
+  return api_('blogs/byurl?url=' + encodeURIComponent(CLEAN.BLOG_URL)).id;
+}
+
+function patchPost_(blogId, postId, content) {
+  return api_('blogs/' + blogId + '/posts/' + postId, 'patch', { content: content });
 }
 
 /** Every live post, one page at a time: fn(post) for each. Return true from fn to stop early. */
 function eachPost_(blogId, pageToken, fn) {
   let token = pageToken || null;
   do {
-    const res = Blogger.Posts.list(blogId, { maxResults: 20, fetchBodies: true, status: 'LIVE', pageToken: token });
+    const res = api_('blogs/' + blogId + '/posts?maxResults=20&fetchBodies=true&status=live' + (token ? '&pageToken=' + encodeURIComponent(token) : ''));
     const items = res.items || [];
     for (let i = 0; i < items.length; i++) if (fn(items[i], token)) return { stopped: true };
     token = res.nextPageToken || null;
@@ -79,7 +100,7 @@ function cleanupRun() {
     if (after === p.content) return false;
     backup.push({ id: p.id, url: p.url, title: p.title, content: p.content });
     saveBackup_(backup);                                                                 // backup before changing
-    Blogger.Posts.patch({ content: after }, id, p.id);
+    patchPost_(id, p.id, after);
     fixed++;
     props.setProperty('CLEAN_TOKEN', token || '');
     return false;
@@ -112,7 +133,7 @@ function cleanupRestore() {
   files.sort(function (a, b) { return a.getDateCreated() - b.getDateCreated(); });
   let n = 0;
   files.forEach(function (f) {
-    JSON.parse(f.getBlob().getDataAsString()).forEach(function (p) { Blogger.Posts.patch({ content: p.content }, id, p.id); n++; });
+    JSON.parse(f.getBlob().getDataAsString()).forEach(function (p) { patchPost_(id, p.id, p.content); n++; });
   });
   Logger.log('Restored %s posts from %s backup files.', n, files.length);
 }
