@@ -21,7 +21,10 @@
   <link href='https://YOUR-GITHUB-USER.github.io/YOUR-REPO/assets/brand/logo-mark-small.svg' rel='icon' type='image/svg+xml'/>
   <link href='https://YOUR-GITHUB-USER.github.io/YOUR-REPO/assets/brand/apple-touch-icon.png' rel='apple-touch-icon'/>
   <title><b:if cond='data:view.isHomepage'><data:blog.title.escaped/> &#8212; Find &amp; Share WhatsApp Groups and Channels<b:else/><data:view.title.escaped/> | <data:blog.title.escaped/></b:if></title>
-  <meta content='website' property='og:type'/>
+  <b:if cond='data:view.isPost'><meta content='article' property='og:type'/><b:else/><meta content='website' property='og:type'/></b:if>
+  <meta expr:content='data:blog.title' property='og:site_name'/>
+  <meta expr:content='data:view.title' name='twitter:title'/>
+  <b:if cond='data:view.isHomepage'><script type='application/ld+json'>{"@context":"https://schema.org","@type":"Organization","name":"ShareYourGroup","url":"https://www.your-domain.com/","logo":"https://YOUR-GITHUB-USER.github.io/YOUR-REPO/assets/brand/favicon-512.png","sameAs":["https://www.instagram.com/YOUR-PAGE","https://www.facebook.com/YOUR-PAGE","https://www.reddit.com/user/YOUR-NAME/"]}</script></b:if>
   <meta content='summary_large_image' name='twitter:card'/>
 
   <!-- Dark by default; remembers the visitor's choice (no flash) -->
@@ -334,6 +337,7 @@ body#layout .section{margin:0 0 12px}
                     <div class='post-header'></div>
                     <div class='post-body entry-content' expr:id='&quot;post-body-&quot; + data:post.id'>
                       <data:post.body/>
+                      <b:if cond='data:view.isPost'><script type='application/ld+json'>{"@context":"https://schema.org","@type":"BlogPosting","headline":"<data:post.title.jsonEscaped/>","url":"<data:post.url.canonical/>","datePublished":"<data:post.date.iso8601/>","dateModified":"<data:post.lastUpdated.iso8601/>",<b:if cond='data:post.featuredImage'>"image":"<data:post.featuredImage/>",</b:if>"author":{"@type":"Organization","name":"ShareYourGroup","url":"https://www.your-domain.com/"},"publisher":{"@type":"Organization","name":"ShareYourGroup","logo":{"@type":"ImageObject","url":"https://YOUR-GITHUB-USER.github.io/YOUR-REPO/assets/brand/favicon-512.png"}}}</script><script type='application/ld+json'>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.your-domain.com/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://www.your-domain.com/search"},{"@type":"ListItem","position":3,"name":"<data:post.title.jsonEscaped/>","item":"<data:post.url.canonical/>"}]}</script></b:if>
                     </div>
                     <b:if cond='data:post.labels'>
                       <div class='post-labels'>
