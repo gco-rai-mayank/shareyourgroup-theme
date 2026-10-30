@@ -331,21 +331,43 @@
   }
   /* The promo/ad HTML comes from the hidden Blogger gadget. Read it once, then remove the gadget so its
      copy of the ad never loads inside a hidden box (that gives AdSense a 0-width slot and an error). */
-  var promoHtml = (function () {
+  /* Several promos: put each in its own top-level <div> in the gadget, and they take turns.
+     A promo with several <img class="promo-banner"> shows one of them at random each time. */
+  var promos = (function () {
     var src = qs('.promo-src'), p = src && (qs('.widget-content', src) || src), html = p ? p.innerHTML.trim() : '';
     if (src) src.parentNode.removeChild(src);
     // "full width responsive" would stretch the ad past its card on phones
-    return html.replace(/\sdata-full-width-responsive=(["'])true\1/gi, ' data-full-width-responsive="false"');
+    html = html.replace(/\sdata-full-width-responsive=(["'])true\1/gi, ' data-full-width-responsive="false"');
+    if (!html) return [];
+    var box = document.createElement('template'), kids;   // a template, so no banner loads until it is shown
+    box.innerHTML = html;
+    kids = [].slice.call(box.content.children);
+    var loose = [].some.call(box.content.childNodes, function (n) { return n.nodeType === 3 && n.nodeValue.trim(); });
+    var split = kids.length > 1 && !loose && kids.every(function (k) { return k.tagName === 'DIV'; });
+    return split ? kids.map(function (k) { return k.outerHTML; }) : [html];
   })();
-  /* Ad slots take turns: an AdSense ad (when SYG.adSlot is set), then the promo card, and so on. */
+  function promoHtml(html) {
+    if (html.indexOf('promo-banner') < 0) return html;
+    var t = document.createElement('template');
+    t.innerHTML = html;
+    var imgs = t.content.querySelectorAll('img.promo-banner');
+    if (imgs.length < 2) return html;
+    var keep = Math.floor(Math.random() * imgs.length);
+    [].forEach.call(imgs, function (img, i) {
+      if (i !== keep) { var a = img.closest('a') || img; a.parentNode.removeChild(a); }
+    });
+    return t.innerHTML;
+  }
+  var promoTurn = Math.floor(Math.random() * Math.max(promos.length, 1));   // each page starts on a different promo
+  /* Ad slots take turns: an AdSense ad (when SYG.adSlot is set), then a promo card, and so on. */
   var adTurn = 0;
   function adCard() {
-    var useAdsense = C.adSlot && (adTurn % 2 === 0 || !promoHtml);
+    var useAdsense = C.adSlot && (adTurn % 2 === 0 || !promos.length);
     adTurn++;
     if (useAdsense) {
       return '<div class="g-ad g-ad-adsense"><ins class="adsbygoogle" data-ad-client="' + esc(C.adClient) + '" data-ad-format="rectangle" data-ad-slot="' + esc(C.adSlot) + '" data-full-width-responsive="false" style="display:block"></ins></div>';
     }
-    return promoHtml ? '<div class="g-ad">' + promoHtml + '</div>' : '';
+    return promos.length ? '<div class="g-ad">' + promoHtml(promos[promoTurn++ % promos.length]) + '</div>' : '';
   }
 
   function buildExplorer() {

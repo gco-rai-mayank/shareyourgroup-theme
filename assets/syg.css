@@ -287,6 +287,14 @@ kbd{font-family:var(--font-mono);font-size:.7rem;padding:2px 6px;border-radius:6
 .g-ad img{border-radius:12px;max-height:250px;width:auto;object-fit:contain}
 .g-ad a.cta-btn{display:inline-block;margin-top:8px;padding:8px 14px;border-radius:10px;background:var(--green);color:var(--green-ink);font-weight:600}
 .g-ad ins{width:100%}
+/* text promo (no banner image): icon tile, title, one line, button */
+.g-ad .promo-ic{display:grid;place-items:center;width:84px;height:84px;margin:0 auto 6px;border-radius:24px;background:linear-gradient(135deg,#1cb455,#0b7d8c);color:#fff;box-shadow:0 10px 24px -10px rgba(21,150,63,.6)}
+.g-ad .promo-ic svg{width:44px;height:44px}
+.g-ad .promo-title{display:block;margin:4px 0 2px;font:700 1.12rem/1.25 var(--font-display);color:var(--text)}
+.g-ad .promo-line{display:block;max-width:250px;margin:0 auto;color:var(--muted);line-height:1.45}
+.g-ad .promo-line~.cta-btn{margin-top:12px}
+.g-ad .promo-line~small{display:block;margin-top:8px;color:var(--faint)}
+.g-ad img.promo-banner{display:block;width:auto;max-width:100%;height:auto;max-height:180px;margin:0 auto 8px}
 
 .sk{pointer-events:none}
 .sk .g-ava,.sk .sk-line{background:var(--surface-2);animation:shimmer 1.4s infinite}
