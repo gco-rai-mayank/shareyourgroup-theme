@@ -490,12 +490,19 @@
     writeURL();
     if (S.q) track('search', { search_term: S.q });
   }
+  /* A promo card is two rows tall. When "every N groups" plus its 2 cells fills whole rows exactly,
+     every card lands in the same column (6 groups on 4 or 2 columns). Then use N - 1 instead, so they
+     move across the columns. */
+  function adGap() {
+    var n = C.adEvery, t = getComputedStyle(grid).gridTemplateColumns, cols = t && t !== 'none' ? t.split(' ').length : 1;
+    return cols > 1 && n > 2 && (n + 2) % cols === 0 ? n - 1 : n;
+  }
   function more() {
     if (!grid || S.shown >= S.view.length) return;
-    var next = S.view.slice(S.shown, S.shown + C.perPage), html = '';
+    var next = S.view.slice(S.shown, S.shown + C.perPage), html = '', gap = C.adEvery && adGap();
     next.forEach(function (g, i) {
       var pos = S.shown + i;
-      if (C.adEvery && pos > 0 && pos % C.adEvery === 0) html += adCard();
+      if (gap && pos > 0 && pos % gap === 0) html += adCard();
       html += card(g);
     });
     S.shown += next.length;
