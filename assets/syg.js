@@ -360,14 +360,18 @@
   }
   var promoTurn = Math.floor(Math.random() * Math.max(promos.length, 1));   // each page starts on a different promo
   /* Ad slots take turns: an AdSense ad (when SYG.adSlot is set), then a promo card, and so on. */
-  var adTurn = 0;
+  /* Each slot keeps the card (and banner) it got first, so when the list redraws (fresh data, a new
+     search) the same spot shows the same card instead of switching. A page reload picks a new mix. */
+  var adTurn = 0, adSlots = [];
   function adCard() {
-    var useAdsense = C.adSlot && (adTurn % 2 === 0 || !promos.length);
-    adTurn++;
-    if (useAdsense) {
-      return '<div class="g-ad g-ad-adsense"><ins class="adsbygoogle" data-ad-client="' + esc(C.adClient) + '" data-ad-format="rectangle" data-ad-slot="' + esc(C.adSlot) + '" data-full-width-responsive="false" style="display:block"></ins></div>';
+    var n = adTurn++;
+    if (adSlots[n] == null) {
+      var useAdsense = C.adSlot && (n % 2 === 0 || !promos.length);
+      adSlots[n] = useAdsense
+        ? '<div class="g-ad g-ad-adsense"><ins class="adsbygoogle" data-ad-client="' + esc(C.adClient) + '" data-ad-format="rectangle" data-ad-slot="' + esc(C.adSlot) + '" data-full-width-responsive="false" style="display:block"></ins></div>'
+        : promos.length ? '<div class="g-ad">' + promoHtml(promos[promoTurn++ % promos.length]) + '</div>' : '';
     }
-    return promos.length ? '<div class="g-ad">' + promoHtml(promos[promoTurn++ % promos.length]) + '</div>' : '';
+    return adSlots[n];
   }
 
   function buildExplorer() {
