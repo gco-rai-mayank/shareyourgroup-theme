@@ -344,8 +344,32 @@
     kids = [].slice.call(box.content.children);
     var loose = [].some.call(box.content.childNodes, function (n) { return n.nodeType === 3 && n.nodeValue.trim(); });
     var split = kids.length > 1 && !loose && kids.every(function (k) { return k.tagName === 'DIV'; });
-    return split ? kids.map(function (k) { return k.outerHTML; }) : [html];
+    return spread(split ? kids.map(function (k) { return k.outerHTML; }) : [html]);
   })();
+  /* Orders the promos so two cards of the same brand (same link host) never follow each other,
+     including from the last card back to the first. Each brand keeps its own card order. */
+  function spread(list) {
+    var groups = {}, order = [], out = [], last = null;
+    list.forEach(function (h) {
+      var m = h.match(/href=["']https?:\/\/([^\/"']+)/i), k = m ? m[1].toLowerCase() : h;
+      if (!groups[k]) { groups[k] = []; order.push(k); }
+      groups[k].push(h);
+    });
+    var first = null;
+    while (out.length < list.length) {
+      var left = list.length - out.length, pick = null;
+      order.forEach(function (k) {
+        if (!groups[k].length || k === last || (left === 1 && k === first && order.length > 1)) return;
+        // most cards left first; on a tie, the opening brand, so it isn't left over for the last slot
+        if (!pick || groups[k].length > groups[pick].length || (groups[k].length === groups[pick].length && k === first)) pick = k;
+      });
+      if (!pick) pick = order.filter(function (k) { return groups[k].length; })[0];   // only one brand left
+      out.push(groups[pick].shift());
+      if (first === null) first = pick;
+      last = pick;
+    }
+    return out;
+  }
   function promoHtml(html) {
     if (html.indexOf('promo-banner') < 0) return html;
     var t = document.createElement('template');
