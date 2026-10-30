@@ -123,6 +123,11 @@ Put these in any Blogger page or post (HTML view). The script fills them in.
 The layout gadget **Promo card between groups** (Blogger → Layout) is the promo shown in the card
 slots. Paste any HTML there, including an AdSense `<ins>` unit.
 
+- Several promos: put each in its own top-level `<div>`; they take turns, starting from a random one.
+- Several banners in one promo: give each image `class="promo-banner"`; one is picked at random.
+- Country-only promos: `<div data-country="IN">` shows that promo only to visitors whose device is on
+  India time. Promos without `data-country` show to everyone.
+
 ## Ads
 
 The theme is built so ads don't break the layout: auto ads inside the grid get a full row, anchor

@@ -332,7 +332,16 @@
   /* The promo/ad HTML comes from the hidden Blogger gadget. Read it once, then remove the gadget so its
      copy of the ad never loads inside a hidden box (that gives AdSense a 0-width slot and an error). */
   /* Several promos: put each in its own top-level <div> in the gadget, and they take turns.
-     A promo with several <img class="promo-banner"> shows one of them at random each time. */
+     A promo with several <img class="promo-banner"> shows one of them at random each time.
+     <div data-country="IN"> shows that promo only to visitors in India (told by the device's time zone,
+     so nothing extra is fetched). */
+  var visitorCountry = (function () {
+    try { return /^Asia\/(Kolkata|Calcutta)$/.test(Intl.DateTimeFormat().resolvedOptions().timeZone) ? 'IN' : ''; } catch (e) { return ''; }
+  })();
+  function forVisitor(el) {
+    var only = (el.getAttribute('data-country') || '').toUpperCase();
+    return !only || only.split(/[\s,]+/).indexOf(visitorCountry) > -1;
+  }
   var promos = (function () {
     var src = qs('.promo-src'), p = src && (qs('.widget-content', src) || src), html = p ? p.innerHTML.trim() : '';
     if (src) src.parentNode.removeChild(src);
@@ -343,8 +352,8 @@
     box.innerHTML = html;
     kids = [].slice.call(box.content.children);
     var loose = [].some.call(box.content.childNodes, function (n) { return n.nodeType === 3 && n.nodeValue.trim(); });
-    var split = kids.length > 1 && !loose && kids.every(function (k) { return k.tagName === 'DIV'; });
-    return split ? kids.map(function (k) { return k.outerHTML; }) : [html];
+    var split = kids.length && !loose && kids.every(function (k) { return k.tagName === 'DIV'; });
+    return split ? kids.filter(forVisitor).map(function (k) { return k.outerHTML; }) : [html];
   })();
   function promoHtml(html) {
     if (html.indexOf('promo-banner') < 0) return html;
