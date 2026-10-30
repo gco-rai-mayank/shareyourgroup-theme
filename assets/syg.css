@@ -83,8 +83,8 @@ p{margin:0 0 1em}
 .btn-primary{background:var(--green);color:var(--green-ink);box-shadow:0 8px 24px -10px rgba(37,211,102,.7)}
 .btn-primary:hover{box-shadow:0 10px 30px -8px rgba(37,211,102,.85)}
 /* every green button, both themes: white text on a deeper green (bright #25d366 is too light for white text) */
-.btn-primary,.entry .btn-primary,.entry .t-box .btn-primary,.contact-form-widget .contact-form-button,.contact-form-widget input[type=button],.new-pill,.g-ad a.cta-btn,.tabbar .tab-add span,.lm-ic,.auto-toggle[aria-pressed='true']{background:linear-gradient(180deg,#1cb455,#15963f);color:#fff;border-color:transparent}
-.btn-primary:hover,.contact-form-widget .contact-form-button:hover,.contact-form-widget input[type=button]:hover,.new-pill:hover,.g-ad a.cta-btn:hover{background:linear-gradient(180deg,#19a64e,#128536)}
+.btn-primary,.entry .btn-primary,.entry .t-box .btn-primary,.contact-form-widget .contact-form-button,.contact-form-widget input[type=button],.new-pill,.g-pick a.cta-btn,.tabbar .tab-add span,.lm-ic,.auto-toggle[aria-pressed='true']{background:linear-gradient(180deg,#1cb455,#15963f);color:#fff;border-color:transparent}
+.btn-primary:hover,.contact-form-widget .contact-form-button:hover,.contact-form-widget input[type=button]:hover,.new-pill:hover,.g-pick a.cta-btn:hover{background:linear-gradient(180deg,#19a64e,#128536)}
 .btn-ghost{background:var(--surface);border-color:var(--line-2)}
 .btn-ghost:hover{background:var(--surface-2)}
 .btn-sm{height:36px;padding:0 12px;font-size:.88rem;border-radius:10px}
@@ -281,20 +281,20 @@ kbd{font-family:var(--font-mono);font-size:.7rem;padding:2px 6px;border-radius:6
 /* promo / ad: one card wide, two cards tall, so a 300×250 (or 250×250) AdSense ad fits.
    "dense" lets the next cards fill the space beside it, so no gaps appear. */
 .grid{grid-auto-flow:row dense}
-.g-ad{grid-row:span 2;position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;min-height:290px;padding:26px 12px 12px;border-radius:var(--radius);border:1px dashed var(--line-2);background:var(--surface);text-align:center;font-size:.88rem;overflow:hidden}
-.g-ad::before{content:'sponsored';position:absolute;top:9px;left:14px;font:600 .62rem/1 var(--font-mono);color:var(--faint);text-transform:uppercase;letter-spacing:.1em}
-.g-ad>*{max-width:100%}
-.g-ad img{border-radius:12px;max-height:250px;width:auto;object-fit:contain}
-.g-ad a.cta-btn{display:inline-block;margin-top:8px;padding:8px 14px;border-radius:10px;background:var(--green);color:var(--green-ink);font-weight:600}
-.g-ad ins{width:100%}
+.g-pick{grid-row:span 2;position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;min-height:290px;padding:26px 12px 12px;border-radius:var(--radius);border:1px dashed var(--line-2);background:var(--surface);text-align:center;font-size:.88rem;overflow:hidden}
+.g-pick::before{content:'sponsored';position:absolute;top:9px;left:14px;font:600 .62rem/1 var(--font-mono);color:var(--faint);text-transform:uppercase;letter-spacing:.1em}
+.g-pick>*{max-width:100%}
+.g-pick img{border-radius:12px;max-height:250px;width:auto;object-fit:contain}
+.g-pick a.cta-btn{display:inline-block;margin-top:8px;padding:8px 14px;border-radius:10px;background:var(--green);color:var(--green-ink);font-weight:600}
+.g-pick ins{width:100%}
 /* text promo (no banner image): icon tile, title, one line, button */
-.g-ad .promo-ic{display:grid;place-items:center;width:84px;height:84px;margin:0 auto 6px;border-radius:24px;background:linear-gradient(135deg,#1cb455,#0b7d8c);color:#fff;box-shadow:0 10px 24px -10px rgba(21,150,63,.6)}
-.g-ad .promo-ic svg{width:44px;height:44px}
-.g-ad .promo-title{display:block;margin:4px 0 2px;font:700 1.12rem/1.25 var(--font-display);color:var(--text)}
-.g-ad .promo-line{display:block;max-width:250px;margin:0 auto;color:var(--muted);line-height:1.45}
-.g-ad .promo-line~.cta-btn{margin-top:12px}
-.g-ad .promo-line~small{display:block;margin-top:8px;color:var(--faint)}
-.g-ad img.promo-banner{display:block;width:auto;max-width:100%;height:auto;max-height:180px;margin:0 auto 8px}
+.g-pick .promo-ic{display:grid;place-items:center;width:84px;height:84px;margin:0 auto 6px;border-radius:24px;background:linear-gradient(135deg,#1cb455,#0b7d8c);color:#fff;box-shadow:0 10px 24px -10px rgba(21,150,63,.6)}
+.g-pick .promo-ic svg{width:44px;height:44px}
+.g-pick .promo-title{display:block;margin:4px 0 2px;font:700 1.12rem/1.25 var(--font-display);color:var(--text)}
+.g-pick .promo-line{display:block;max-width:250px;margin:0 auto;color:var(--muted);line-height:1.45}
+.g-pick .promo-line~.cta-btn{margin-top:12px}
+.g-pick .promo-line~small{display:block;margin-top:8px;color:var(--faint)}
+.g-pick img.promo-banner{display:block;width:auto;max-width:100%;height:auto;max-height:180px;margin:0 auto 8px}
 
 .sk{pointer-events:none}
 .sk .g-ava,.sk .sk-line{background:var(--surface-2);animation:shimmer 1.4s infinite}
@@ -580,7 +580,7 @@ dialog.sheet[open]{animation:pop .22s ease}
 .feed-head h1{font-size:clamp(2rem,5vw,3rem)}
 .feed-head p{color:var(--muted)}
 .post-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
-.post-grid .g-ad{grid-row:auto;min-height:0}   /* between articles the ad takes one ordinary cell */
+.post-grid .g-pick{grid-row:auto;min-height:0}   /* between articles the ad takes one ordinary cell */
 .p-card{display:flex;flex-direction:column;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);overflow:hidden;transition:border-color .2s,transform .2s}
 .p-card:hover{border-color:var(--line-2);transform:translateY(-3px)}
 .p-card .media{aspect-ratio:16/9;background:linear-gradient(135deg,rgba(139,92,246,.3),rgba(37,211,102,.25));display:grid;place-items:center;font-size:2rem}
@@ -685,7 +685,7 @@ dialog.sheet[open]{animation:pop .22s ease}
    --ad-top / --ad-bottom are set by syg.js to the height of an anchor ad. */
 ins.adsbygoogle{display:block;max-width:100%;overflow:hidden}
 ins.adsbygoogle[data-ad-status='unfilled']{display:none!important}
-.g-ad.is-unfilled,.ad-wide.is-unfilled{display:none!important}
+.g-pick.is-unfilled,.ad-wide.is-unfilled{display:none!important}
 
 /* auto ads dropped into a grid or flex row take a full row of their own */
 .google-auto-placed{clear:both;flex:0 0 100%;grid-column:1/-1;width:100%;max-width:100%;overflow:hidden;margin:16px 0!important;text-align:center}

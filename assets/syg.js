@@ -377,8 +377,8 @@
     if (adSlots[n] == null) {
       var useAdsense = C.adSlot && (n % 2 === 0 || !promos.length);
       adSlots[n] = useAdsense
-        ? '<div class="g-ad g-ad-adsense"><ins class="adsbygoogle" data-ad-client="' + esc(C.adClient) + '" data-ad-format="rectangle" data-ad-slot="' + esc(C.adSlot) + '" data-full-width-responsive="false" style="display:block"></ins></div>'
-        : promos.length ? '<div class="g-ad">' + promoHtml(promos[promoTurn++ % promos.length]) + '</div>' : '';
+        ? '<div class="g-pick g-pick-gs"><ins class="adsbygoogle" data-ad-client="' + esc(C.adClient) + '" data-ad-format="rectangle" data-ad-slot="' + esc(C.adSlot) + '" data-full-width-responsive="false" style="display:block"></ins></div>'
+        : promos.length ? '<div class="g-pick">' + promoHtml(promos[promoTurn++ % promos.length]) + '</div>' : '';
     }
     return adSlots[n];
   }
@@ -500,7 +500,7 @@
     });
     S.shown += next.length;
     grid.insertAdjacentHTML('beforeend', html);
-    qsa('.g-ad ins.adsbygoogle:not([data-pushed])', grid).forEach(pushAd);
+    qsa('.g-pick ins.adsbygoogle:not([data-pushed])', grid).forEach(pushAd);
     syncLoadBtn();
   }
   /* load an AdSense slot only once it has a real width (a 0-width slot errors and stays blank) */
@@ -943,7 +943,7 @@
       });
       root.style.setProperty('--ad-top', top + 'px');
       root.style.setProperty('--ad-bottom', bottom + 'px');
-      qsa('.g-ad, .ad-wide').forEach(function (box) {
+      qsa('.g-pick, .ad-wide').forEach(function (box) {
         var ins = qs('ins.adsbygoogle', box);
         if (ins) box.classList.toggle('is-unfilled', ins.getAttribute('data-ad-status') === 'unfilled');
       });
@@ -1029,7 +1029,7 @@
       (q ? '<p>Looking for a group instead? <a class="grad" href="/?q=' + encodeURIComponent(q) + '#explore">Search groups for “' + esc(q) + '” →</a></p>' : '<p>Hand-picked WhatsApp group links by city, country and topic, plus tips for running your own group.</p>') + '</header>';
     var list = qs('.blog-posts', w) || w;
     list.innerHTML = head + (items.length ? '<div class="post-grid">' + items.join('') + '</div>' : '<div class="empty"><div class="big">🔍</div><h3>No posts found</h3><p>Try a different keyword.</p></div>');
-    qsa('.g-ad ins.adsbygoogle:not([data-pushed])', list).forEach(function (ins) { pushAd(ins); });
+    qsa('.g-pick ins.adsbygoogle:not([data-pushed])', list).forEach(function (ins) { pushAd(ins); });
   })();
 
   /* ---------- group list inside a blog post ----------
